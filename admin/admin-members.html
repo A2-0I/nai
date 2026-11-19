@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 프로세스 ADMIN - 회원 관리</title>
+<link rel="stylesheet" href="../shared/theme.css?v=20260814-1408">
+<style>
+:root{--bg:#f5f8fb;--card:#fff;--soft:#f8fafc;--line:#e2e8ef;--text:#17243a;--sub:#657287;--muted:#8b97a8;--navy:#274b77;--blue-soft:#edf4fb;--green:#177b66;--green-soft:#e9f5f1;--red:#b85a63;--amber:#9a6b22;--amber-soft:#fff6e7;--shadow:0 10px 30px rgba(37,57,82,.055)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#fafcfd,#f4f7fa);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;color:var(--text)}button,input{font:inherit}.layout{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}.sidebar{padding:24px 16px;background:#fff;border-right:1px solid var(--line)}.logo{font-size:20px;font-weight:800;color:var(--navy);margin:4px 8px 24px}.nav a{display:block;text-decoration:none;color:#657287;padding:12px 13px;border-radius:10px;font-size:14px;font-weight:700;margin:4px 0}.nav a.active{background:var(--blue-soft);color:var(--navy)}.logout{margin:24px 9px 0;border:0;background:none;color:#8b96a7;font-size:13px;cursor:pointer}.main{padding:28px;min-width:0}.header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:18px}.header h1{margin:0;font-size:28px}.header p{margin:7px 0 0;color:var(--muted);font-size:14px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.toolbar{padding:18px;display:flex;gap:12px;align-items:center}.search{flex:1;height:46px;border:1px solid var(--line);border-radius:11px;padding:0 14px;background:var(--soft);font-size:14px}.count{font-size:13px;color:var(--sub);white-space:nowrap}.table-card{margin-top:14px;overflow:hidden}.thead,.row{display:grid;grid-template-columns:minmax(150px,1.15fr) minmax(150px,1fr) minmax(150px,1fr) 130px 180px;gap:12px;align-items:center}.thead{padding:13px 20px;background:#f7f9fb;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:750}.row{padding:17px 20px;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.name{font-size:15px;font-weight:800}.username,.phone{font-size:14px;color:var(--sub)}.badge{display:inline-flex;justify-content:center;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800}.badge.ok{background:var(--green-soft);color:var(--green)}.badge.wait{background:var(--amber-soft);color:var(--amber)}.actions{display:flex;gap:7px}.btn{border:1px solid var(--line);background:#fff;color:#566478;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:750;cursor:pointer}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn.danger{color:var(--red)}.empty{padding:46px;text-align:center;color:var(--muted);font-size:14px}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.sidebar{padding:12px;border-right:0;border-bottom:1px solid var(--line)}.logo{margin:2px 6px 10px}.nav{display:flex;overflow:auto}.nav a{white-space:nowrap}.logout{display:none}.main{padding:16px}.thead{display:none}.row{grid-template-columns:1fr;gap:8px;padding:16px}.actions{margin-top:4px}.toolbar{align-items:stretch;flex-direction:column}.count{align-self:flex-start}}
+
+.create-box{padding:22px;margin-bottom:14px}.create-box h2{font-size:19px;margin:0 0 16px}.create-box form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;align-items:end;gap:12px}.create-box label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:700;color:var(--sub)}.create-box input{width:100%;height:44px;border:1px solid var(--line);border-radius:9px;padding:0 12px;background:#fff;color:var(--text)}.create-box button{height:44px}.create-note{color:var(--muted);font-size:12px;line-height:1.6;margin:13px 0 0}#createResult{font-size:13px;min-height:18px;margin:10px 0 0;color:var(--navy)}
+@media(max-width:980px){.create-box form{grid-template-columns:1fr}.create-box{padding:17px}}
+</style></head>
+<body><div class="layout"><aside class="sidebar"><div class="logo">AI 프로세스 ADMIN</div><nav class="nav"><a class="active" href="admin-members.html">회원 관리</a><a href="admin_dashboard.html">투자 관리</a><a href="admin-profit.html">수익 관리</a><a href="admin-auto.html">자동 지급</a></nav><button id="btnLogout" class="logout">로그아웃</button></aside><main class="main"><div class="header"><div><h1>회원 관리</h1><p>관리자가 성함·닉네임·비밀번호를 등록해 회원 계정을 발급합니다.</p></div></div><section class="card create-box" aria-label="회원 등록">
+ <h2>새 회원 등록</h2>
+ <form id="createMember" autocomplete="off">
+  <label>성함 <input id="newName" name="name" required maxlength="80" placeholder="로그인에 사용할 성함" autocomplete="off"></label>
+  <label>닉네임 <input id="newNickname" name="nickname" required maxlength="80" placeholder="회원 식별용 닉네임" autocomplete="off"></label>
+  <label>비밀번호 <input id="newPassword" name="password" type="password" required minlength="4" maxlength="128" placeholder="4자 이상" autocomplete="new-password"></label>
+  <button class="btn primary" id="createButton" type="submit">회원 등록</button>
+ </form>
+ <p class="create-note">회원은 성함과 비밀번호로만 로그인합니다. 닉네임은 기존 투자·수익 기록을 연결하는 내부 아이디로 보관합니다. 같은 성함은 중복 등록하지 않습니다.</p>
+ <p id="createResult" role="status" aria-live="polite"></p>
+ </section><section class="card toolbar"><input id="search" class="search" placeholder="성함 · 닉네임 · 휴대폰 검색"><div id="count" class="count">회원 0명</div></section><section class="card table-card"><div class="thead"><div>성함</div><div>닉네임</div><div>휴대폰</div><div>승인 상태</div><div>관리</div></div><div id="list"></div></section></main></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="../shared/config.js?v=20260814-1408"></script><script src="../shared/sb.js?v=20260814-1408"></script><script src="../shared/app.js?v=20260814-1408"></script><script>
+const sb=(window.aiProcessor&&typeof window.aiProcessor.sb==='function')?window.aiProcessor.sb():null;let users=[];const $=id=>document.getElementById(id);
+function checkAdmin(){if(localStorage.getItem('ai_processor_admin_login')!=='true'){alert('관리자 로그인이 필요합니다.');location.href='login.html';return false}return true}
+async function load(){const {data,error}=await sb.from('app_users').select('id,username,name,phone,approved,role,created_at').eq('role','user').order('created_at',{ascending:false});if(error)throw error;users=data||[];render()}
+function render(){const q=($('search').value||'').trim().toLowerCase();const rows=users.filter(u=>!q||String(u.name||'').toLowerCase().includes(q)||String(u.username||'').toLowerCase().includes(q)||String(u.phone||'').toLowerCase().includes(q));$('count').textContent=`회원 ${rows.length}명`;if(!rows.length){$('list').innerHTML='<div class="empty">표시할 회원이 없습니다.</div>';return}$('list').innerHTML=rows.map(u=>`<div class="row"><div class="name">${safeText(u.name||'-')}</div><div class="username">${safeText(u.username||'-')}</div><div class="phone">${safeText(u.phone||'-')}</div><div><span class="badge ${u.approved?'ok':'wait'}">${u.approved?'승인 완료':'승인 대기'}</span></div><div class="actions">${u.approved?`<button class="btn danger" onclick="setApproval('${u.id}',false)">승인 취소</button>`:`<button class="btn primary" onclick="setApproval('${u.id}',true)">승인</button>`}</div></div>`).join('')}
+async function setApproval(id,approved){const {error}=await sb.from('app_users').update({approved}).eq('id',id);if(error)return alert('승인 처리 오류: '+error.message);const u=users.find(x=>x.id===id);if(u)u.approved=approved;render()}
+function safeText(value){return String(value??'').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+async function createMember(event){
+ event.preventDefault();
+ const name=$('newName').value.trim();
+ const nickname=$('newNickname').value.trim();
+ const password=$('newPassword').value;
+ const message=$('createResult');const button=$('createButton');
+ message.textContent='';
+ if(!name||!nickname||password.length<4){message.textContent='성함·닉네임과 4자 이상 비밀번호를 입력해주세요.';return}
+ if(!sb){message.textContent='데이터베이스가 연결되지 않았습니다.';return}
+ button.disabled=true;
+ try{
+  const [sameName,sameNickname]=await Promise.all([
+   sb.from('app_users').select('id').eq('name',name).eq('role','user').limit(1),
+   sb.from('app_users').select('id').eq('username',nickname).limit(1)
+  ]);
+  if(sameName.error)throw sameName.error;
+  if(sameNickname.error)throw sameNickname.error;
+  if(sameName.data?.length){message.textContent='이미 등록된 성함입니다. 동일 성함은 구분이 어려우므로 다른 로그인 방식이 필요합니다.';return}
+  if(sameNickname.data?.length){message.textContent='이미 사용 중인 닉네임입니다.';return}
+  const {error}=await sb.from('app_users').insert({name,username:nickname,password_hash:password,role:'user',approved:true,status:'대기중',amount:0,realized_amount:0});
+  if(error)throw error;
+  $('createMember').reset();message.textContent='회원 등록 완료: 성함 + 비밀번호로 로그인할 수 있습니다.';
+  await load();
+ }catch(error){console.error(error);message.textContent='등록 실패: '+(error.message||'DB 설정 확인 필요')}
+ finally{button.disabled=false}
+}
+$('createMember').addEventListener('submit',createMember);
+$('search').oninput=render;$('btnLogout').onclick=()=>{localStorage.removeItem('ai_processor_admin_login');localStorage.removeItem('ai_processor_admin');location.href='login.html'};document.addEventListener('DOMContentLoaded',()=>{if(!checkAdmin())return;if(!sb)return alert('Supabase 연결을 확인해주세요.');load().catch(e=>{console.error(e);alert('회원 정보를 불러오지 못했습니다.')})});
+</script></body></html>
