@@ -1,1721 +1,237 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI PROCESS - 대시보드</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI 프로세스 - 내 투자</title>
+<link rel="stylesheet" href="../shared/theme.css?v=20260815-1128" />
+<style>
 
-  <link rel="icon" type="image/png" href="../favicon.png" />
-  <link rel="apple-touch-icon" href="../favicon.png" />
+:root{
+  --bg:#f4f8fd;--card:#ffffff;--soft:#f7faff;--line:#dce7f3;--line-strong:#cbdbea;
+  --text:#0e2550;--sub:#60718a;--muted:#8a99ae;--navy:#0b2a61;--blue:#136fe8;--blue2:#4c9cff;
+  --blue-soft:#eef6ff;--green:#0b8b62;--green-soft:#eaf8f2;--red:#c55161;--red-soft:#fff0f3;
+  --amber:#a56b18;--amber-soft:#fff6e8;--done:#6c7a8d;--done-soft:#f0f4f7;
+  --shadow:0 18px 50px rgba(23,61,112,.075);--shadow-soft:0 8px 28px rgba(23,61,112,.055)
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(760px 420px at -4% -3%,rgba(46,128,237,.11),transparent 62%),
+  radial-gradient(680px 360px at 103% 8%,rgba(101,177,255,.08),transparent 63%),
+  linear-gradient(180deg,#fafdff 0%,#f4f8fd 52%,#f7f9fc 100%);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;color:var(--text);letter-spacing:-.025em}
+button,input{font:inherit}.hidden{display:none!important}.green{color:var(--green)!important}.red{color:var(--red)!important}
+.shell{max-width:1180px;margin:0 auto;padding:20px 20px 56px}
+.topbar{position:sticky;top:12px;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 17px 14px 20px;background:rgba(255,255,255,.92);border:1px solid rgba(210,225,240,.92);border-radius:22px;box-shadow:0 12px 35px rgba(20,55,102,.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.logo{font-weight:900;font-size:20px;letter-spacing:-.045em;color:var(--navy)}
+.logo::before{content:"";display:inline-block;width:8px;height:8px;margin-right:9px;border-radius:50%;background:linear-gradient(135deg,#0c6ff1,#58a8ff);box-shadow:0 0 0 5px rgba(19,111,232,.08);vertical-align:2px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:3px;background:#f5f8fc;border:1px solid #e5edf6;border-radius:13px}
+.nav button{border:0;background:transparent;color:#6a7a91;padding:9px 14px;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;transition:.18s ease}
+.nav button:hover{color:var(--navy);background:#fff}.nav button.active{background:linear-gradient(135deg,#0e4f9e,#176fcb);color:#fff;box-shadow:0 6px 16px rgba(15,83,160,.18)}
+.section{margin-top:16px}.card{position:relative;background:rgba(255,255,255,.985);border:1px solid #e4ebf3;border-radius:24px;box-shadow:0 14px 36px rgba(25,58,98,.055);padding:26px;overflow:hidden}
+#sectionStatus::before,#sectionRealtime::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#0d68e5 0%,#4a9cff 58%,rgba(74,156,255,0) 100%)}
+.section-title{font-size:25px;font-weight:900;letter-spacing:-.045em}.section-sub{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.65}
+.selector-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:10px}.selector-head h3{margin:0;font-size:25px;letter-spacing:-.045em;font-weight:900}.selector-head span{font-size:12px;color:var(--muted)}
+.filter-row{display:flex;gap:8px;margin:14px 0 14px}.filter-row button{border:1px solid #d7e3f0;background:#fff;color:#64758c;border-radius:999px;padding:9px 16px;font-size:11.5px;font-weight:820;cursor:pointer;box-shadow:0 3px 10px rgba(27,62,107,.035)}.filter-row button.active{background:linear-gradient(135deg,#0d3974,#125faf);color:#fff;border-color:#125397;box-shadow:0 7px 16px rgba(19,83,153,.15)}
+.investment-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;overflow:visible;padding:1px 1px 4px}
+.investment-item{position:relative;min-width:0;text-align:left;border:1px solid #e1e9f2;background:#fff;border-radius:18px;padding:17px 17px 16px;cursor:pointer;color:var(--text);box-shadow:0 7px 20px rgba(24,57,96,.035);transition:.18s ease transform,.18s ease border-color,.18s ease box-shadow;overflow:hidden}
+.investment-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#dfeaf7;transition:.18s ease}.investment-item:hover{transform:translateY(-1px);border-color:#bdd1e6;box-shadow:0 12px 30px rgba(23,61,112,.08)}.investment-item.active{background:linear-gradient(145deg,#f8fbff,#fff);border-color:#8db6e2;box-shadow:0 10px 26px rgba(24,92,165,.085)}.investment-item.active::before{width:4px;background:linear-gradient(180deg,#0d69ea,#5aa8ff)}
+.inv-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.inv-title-wrap{display:flex;align-items:center;gap:6px;min-width:0}.inv-code{font-size:15px;font-weight:900;color:var(--navy);letter-spacing:-.035em;overflow-wrap:anywhere}.inv-name-edit{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:22px;height:22px;border-radius:7px;color:#6e8199;font-size:13px;font-weight:900;cursor:pointer;transition:.16s ease}.inv-name-edit:hover{background:#edf5ff;color:#0c65d8}.inv-sub{font-size:11.5px;color:#7d8ca0;margin-top:8px;line-height:1.5}.inv-meta{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-top:13px;padding-top:12px;border-top:1px solid #edf2f7;font-size:12px;color:#5b6d85}.inv-meta b{font-size:14px;color:var(--navy)}.inv-rate-range{display:flex;flex-direction:column;align-items:flex-end;gap:3px}.inv-rate-range small{font-size:10px;font-weight:700;color:#7d8ca0}.inv-rate-range b{font-size:14px;white-space:nowrap}
+.badge,.state-pill{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;font-size:10.5px;font-weight:850;letter-spacing:-.01em}.badge.run,.state-pill.run{background:var(--green-soft);color:var(--green);border:1px solid #d7f0e7}.badge.wait,.state-pill.wait{background:var(--amber-soft);color:var(--amber);border:1px solid #f5e7ca}.badge.done,.state-pill.done{background:var(--done-soft);color:var(--done);border:1px solid #e1e7ed}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:12px}
+.detail{margin-top:21px;padding-top:23px;border-top:1px solid #e7eef6}.detail-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:0 2px}.detail-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.detail-head h2{font-size:25px;margin:0;letter-spacing:-.045em;font-weight:900;overflow-wrap:anywhere}.rename-investment{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #d7e3f0;background:#fff;color:#5f7188;border-radius:10px;padding:0;font-size:15px;font-weight:900;line-height:1;cursor:pointer;box-shadow:0 3px 10px rgba(27,62,107,.03);transition:.16s ease;flex:0 0 auto}.rename-investment:hover{border-color:#9fc3ea;color:#0d62c8;background:#f7fbff}.detail-head p{font-size:12px;color:var(--muted);margin:7px 0 0;line-height:1.55}
+.schedule{position:relative;margin-top:15px;padding:18px;background:linear-gradient(180deg,#f8fbff 0%,#f6f9fc 100%);border:1px solid #dce7f1;border-radius:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.95)}
+.schedule::before{content:"";position:absolute;left:18px;right:18px;top:0;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#1a6edf,#7eb7f2)}
+.schedule-top{display:grid;grid-template-columns:minmax(200px,.72fr) minmax(0,1.28fr);gap:12px;align-items:stretch}.duration,.statebox,.date{background:#fff;border:1px solid #e5ecf3;border-radius:15px;box-shadow:0 3px 10px rgba(27,62,107,.02)}.duration{padding:18px;display:flex;flex-direction:column;justify-content:center;min-height:122px}.duration span,.statebox>span,.date span{font-size:11px;color:var(--muted)}.duration strong{display:block;font-size:30px;color:var(--navy);margin-top:10px;letter-spacing:-.05em;line-height:1.12}.statebox{padding:17px 18px}.state-inline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:7px}.state-inline strong{font-size:30px;color:var(--navy);letter-spacing:-.05em;line-height:1.1}.state-finance{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid #e6eef6}.state-finance div{padding:11px 13px;border-radius:12px;background:#f8fbff;border:1px solid #edf3f8}.state-finance span{display:block;font-size:10.5px;color:var(--muted);margin-bottom:5px}.state-finance b{font-size:19px;line-height:1.25;letter-spacing:-.035em}.dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:11px}.range-dates{grid-template-columns:1fr 2fr}.date{padding:12px 14px}.date span{display:block;margin-bottom:5px}.date strong{font-size:13px;line-height:1.45;color:#1c355b}.duration strong{font-size:21px;line-height:1.3;letter-spacing:-.04em}.rate-wide strong{font-size:18px;line-height:1.35;letter-spacing:-.025em}.rate-wide{background:linear-gradient(180deg,#fff,#fbfdff)}.rate-wide span{font-weight:700;color:#6f7f92}.rate-wide strong{color:#173e6b;font-weight:900}.progress-head{display:flex;justify-content:space-between;margin-top:15px;font-size:11px;color:#6b7d93}.progress-head strong{font-size:12px;color:var(--navy)}.progress{height:8px;background:#e3ebf3;border-radius:999px;overflow:hidden;margin-top:7px;box-shadow:inset 0 1px 2px rgba(23,57,98,.045)}.progress i{display:block;height:100%;background:linear-gradient(90deg,#126ee8,#62a8ef);border-radius:999px;box-shadow:0 0 12px rgba(18,110,232,.22)}
+.schedule.state-run .statebox{border-color:#cbe8dc}.schedule.state-run .state-inline strong{color:var(--green)}.schedule.state-run .progress i{background:linear-gradient(90deg,#1375df,#21a67d)}.schedule.state-wait .statebox{border-color:#f0dfb7}.schedule.state-wait .state-inline strong{color:var(--amber)}.schedule.state-wait .progress i{background:linear-gradient(90deg,#d59b3d,#e6bd6a)}.schedule.state-done .statebox{border-color:#dfe5ea}.schedule.state-done .state-inline strong{color:var(--done)}.schedule.state-done .progress i{background:linear-gradient(90deg,#8396a8,#aab9c6)}
+.steps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.step{position:relative;padding:14px 12px;border:1px solid #dfe8f2;border-radius:15px;background:#fff;font-size:11px;color:#687789;line-height:1.5;text-align:center;box-shadow:0 4px 14px rgba(27,62,107,.025)}.step small{display:block;color:#9aa8ba;margin-bottom:4px;letter-spacing:.06em;font-size:9.5px}.step b{display:block;font-size:13px;color:#30435f}.step.active{border-color:#8db8e8;background:linear-gradient(180deg,#f2f8ff,#fbfdff);box-shadow:inset 0 3px 0 #2678dc,0 6px 18px rgba(33,102,179,.07)}.step.active small,.step.active b{color:#135ba8}
+.realtime-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:15px}.realtime-head h3{margin:0;font-size:19px;letter-spacing:-.035em}.realtime-head p{font-size:11.5px;color:var(--muted);margin:5px 0 0}.toggle{display:flex;gap:4px;padding:4px;background:#f0f5fa;border:1px solid #e4ecf4;border-radius:12px}.toggle button{border:0;background:transparent;padding:8px 11px;border-radius:8px;font-size:10.5px;font-weight:800;color:#6b7788;cursor:pointer}.toggle button.active{background:#fff;color:#0f58aa;box-shadow:0 3px 9px rgba(30,70,120,.08)}
+.realtime-values{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mini{padding:15px 16px;background:#fbfdff;border:1px solid #e5ecf3;border-radius:15px;box-shadow:0 3px 12px rgba(27,62,107,.02)}.mini span{display:block;font-size:10.5px;color:var(--muted)}.mini strong{display:block;margin-top:6px;font-size:20px;line-height:1.25;letter-spacing:-.04em}.chart-wrap{margin-top:12px;padding:17px;background:#fff;border:1px solid #e4ebf2;border-radius:17px;box-shadow:0 3px 12px rgba(27,62,107,.018)}.chart-title{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:820;color:#243d61}.chart-title small{font-weight:500;color:var(--muted)}canvas{display:block;width:100%;height:190px;margin-top:9px}.timeline{margin-top:11px;display:flex;flex-direction:column;gap:7px}.timeline-row{display:grid;grid-template-columns:72px 1fr auto;gap:9px;padding:11px 12px;border:1px solid #e8eef5;border-radius:12px;background:#fbfdff;font-size:11px}.timeline-row time{color:var(--muted)}.up{color:var(--green);font-weight:820}.down{color:var(--red);font-weight:820}
+#sectionIntro{padding:28px}.guide-grid{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:18px;margin-top:20px!important}.guide-col{padding:22px 23px;border:1px solid #dde8f3;border-radius:20px;background:linear-gradient(145deg,#fbfdff,#f7faff);box-shadow:0 8px 24px rgba(27,62,107,.035)}.guide-col:first-child{padding-left:23px;border-right:1px solid #dde8f3}.guide-col:last-child{padding-right:23px}.guide-col h3{font-size:20px;margin:0 0 9px;color:var(--navy);letter-spacing:-.04em}.guide-col h4{font-size:14px;margin:22px 0 9px;color:#183860}.guide-col p,.guide-col li{font-size:12.2px;line-height:1.78;color:#63758d}.guide-col p{margin:0}.guide-col ul{padding-left:18px;margin:8px 0 0}.guide-col li+li{margin-top:4px}.guide-note{margin-top:13px!important;padding:12px 14px;border-radius:12px;background:#eef6ff;color:#41658e!important;font-size:11.5px!important}.scenario-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}.scenario-badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#eaf3ff;color:#135da9;font-size:10.5px;font-weight:850}.guide-steps .gstep{display:grid;grid-template-columns:40px 1fr;gap:11px;padding:14px 0;border-top:1px solid #e4edf6}.guide-steps .gstep:first-child{border-top:0}.gnum{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#eaf3ff,#f5f9ff);border:1px solid #d6e7f9;display:grid;place-items:center;color:#145da9;font-size:10px;font-weight:900}.gstep b{font-size:12.5px;color:#203e64}.gstep p{margin:4px 0 0}.scenario-steps{margin-top:8px}.scenario-steps .gstep{padding:13px 0}.scenario-footer{margin:14px 0 0!important;padding:13px 14px;border-radius:13px;background:#fff;border:1px solid #e2eaf3;color:#526b89!important}
+.account{max-width:860px;margin-left:auto;margin-right:auto}.account-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:10px}.account-row{display:grid;grid-template-columns:150px 1fr;padding:15px 3px;border-bottom:1px solid #e7eef5;font-size:12.5px}.account-row:last-child{border-bottom:0}.account-row span{color:var(--muted)}.account-row strong{text-align:right;color:#263d5e}.btn{border:1px solid #d8e4ef;background:#fff;color:#56687f;border-radius:11px;padding:9px 13px;font-size:11px;font-weight:800;cursor:pointer}.btn.soft{background:linear-gradient(135deg,#0f4e98,#176fcb);border-color:#155ea9;color:#fff;box-shadow:0 6px 16px rgba(18,87,163,.14)}
+.modal-wrap{display:none;position:fixed;inset:0;z-index:100;background:rgba(14,33,59,.32);align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)}.modal-wrap.on{display:flex}.modal{width:min(420px,100%);background:#fff;border:1px solid #dce6f0;border-radius:20px;padding:22px;box-shadow:0 22px 60px rgba(18,44,80,.18)}.modal h3{margin:0;font-size:18px}.modal p{color:var(--muted);font-size:11px}.field{margin-top:14px}.field label{display:block;font-size:11px;color:#607087;margin-bottom:6px}.field input{width:100%;height:44px;border:1px solid #d9e3ed;border-radius:10px;padding:0 11px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+@media(max-width:930px){.investment-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-grid{grid-template-columns:1fr}.guide-col:first-child{border-right:1px solid #dde8f3}.schedule-top{grid-template-columns:1fr 1.35fr}}
+@media(max-width:760px){body{padding-bottom:78px}.shell{padding:0 12px 26px}.topbar{top:0;margin:0 -12px;border-radius:0;border-left:0;border-right:0;padding:12px 14px;box-shadow:0 4px 18px rgba(20,55,102,.055)}.logo{font-size:18px}.logo::before{display:none}.nav{position:fixed;z-index:50;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:7px 8px max(7px,env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border:1px solid #dfe8f1;border-left:0;border-right:0;border-bottom:0;border-radius:0;box-shadow:0 -8px 26px rgba(22,54,96,.08);backdrop-filter:blur(16px)}.nav button{padding:9px 3px;border-radius:9px;font-size:10px}.nav button.active{box-shadow:none}.section{margin-top:12px}.card{padding:18px 16px;border-radius:20px}.section-title,.selector-head h3{font-size:21px}.selector-head{align-items:flex-start}.selector-head span{display:none}.filter-row{margin:12px 0}.investment-strip{display:flex;gap:9px;overflow:auto;padding-bottom:7px;scroll-snap-type:x proximity}.investment-item{flex:0 0 min(84vw,310px);padding:15px;scroll-snap-align:start}.detail{margin-top:17px;padding-top:18px}.detail-head h2{font-size:21px}.schedule{padding:13px;border-radius:18px}.schedule::before{left:13px;right:13px}.schedule-top{grid-template-columns:1fr;gap:9px}.duration{min-height:auto;padding:14px 15px}.duration strong{font-size:24px}.statebox{padding:14px 15px}.state-inline strong{font-size:24px}.state-finance b{font-size:17px}.dates{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.date{padding:10px 8px}.date strong{font-size:11px;word-break:keep-all}.steps{gap:6px}.step{padding:11px 5px}.step b{font-size:11px}.step small{font-size:8.5px}.realtime-head{align-items:flex-start;flex-direction:column}.toggle{align-self:stretch}.toggle button{flex:1}.realtime-values{grid-template-columns:1fr 1fr;gap:7px}.mini{padding:13px}.mini strong{font-size:17px}.chart-wrap{padding:13px;border-radius:15px}.chart-title small{display:none}canvas{height:160px}.timeline-row{grid-template-columns:64px 1fr auto;padding:10px 9px}.guide-col{padding:18px 16px!important;border-radius:17px}.guide-col h3{font-size:18px}.guide-col h4{margin-top:18px}.account-row{grid-template-columns:105px 1fr}}
+@media(max-width:430px){.shell{padding-left:10px;padding-right:10px}.topbar{margin-left:-10px;margin-right:-10px}.card{padding:16px 13px}.filter-row button{padding:8px 13px}.investment-item{flex-basis:88vw}.state-finance{gap:6px}.state-finance div{padding:9px}.state-finance b{font-size:15px}.dates{gap:5px}.date{padding:9px 6px}.date span{font-size:9px}.date strong{font-size:10px}.progress{height:8px}.realtime-values{grid-template-columns:1fr}.steps{grid-template-columns:repeat(3,1fr)}.scenario-head{align-items:flex-start;flex-direction:column}}
 
-  <style>
-    * { box-sizing: border-box; }
-
-    @font-face {
-      font-family: 'SUIT-Regular';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2') format('woff2');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'SUIT-Regular', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height: 100vh;
-      color: #0f172a;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.25), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(52, 211, 153, 0.2), transparent 55%),
-        linear-gradient(135deg, #eef2ff, #fefce8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 18px 12px 28px;
-    }
-
-    .shell { width: 100%; max-width: 1000px; }
-
-    .frame {
-      border-radius: 26px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      box-shadow: 0 20px 60px rgba(148, 163, 184, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.8);
-      padding: 18px 20px 22px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .logo {
-      font-weight: 800;
-      font-size: 19px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #111827;
-      user-select: none;
-    }
-    .logo span {
-      color: #4f46e5;
-      font-weight: 900;
-      letter-spacing: 0.24em;
-    }
-
-    .nav {
-      display: flex;
-      gap: 8px;
-      font-size: 14px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .nav button {
-      padding: 7px 15px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: #f3f4f6;
-      color: #111827;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.16s ease;
-    }
-    .nav button.active {
-      background: #111827;
-      color: #f9fafb;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.35);
-      transform: translateY(-1px);
-    }
-    .nav button:hover:not(.active) { background: #e5e7eb; }
-
-    .card {
-      border-radius: 20px;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 16px 40px rgba(148, 163, 184, 0.25);
-      padding: 18px 18px 18px;
-      margin-bottom: 14px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      color: #111827;
-    }
-
-    .section-sub {
-      font-size: 13px;
-      color: #6b7280;
-      margin-bottom: 14px;
-    }
-
-    .value-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 6px;
-    }
-
-    .value-box {
-      flex: 1;
-      min-width: 180px;
-      padding: 14px 14px;
-      border-radius: 16px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .value-label {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 4px;
-    }
-
-    /* ✅ 타임라인 */
-    .timeline-item{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid #e5e7eb;
-      background:#f9fafb;
-    }
-    .timeline-left{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-    .timeline-time{
-      font-size:12px;
-      color:#6b7280;
-    }
-    .timeline-msg{
-      font-size:13px;
-      font-weight:800;
-      color:#111827;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .timeline-delta{
-      font-size:13px;
-      font-weight:900;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid transparent;
-      white-space:nowrap;
-    }
-    .timeline-up{ background:#fee2e2; color:#dc2626; border-color:#fecaca; }
-    .timeline-down{ background:#dbeafe; color:#2563eb; border-color:#bfdbfe; }
-    .timeline-same{ background:#e5e7eb; color:#6b7280; border-color:#d1d5db; }
-
-    /* ✅ 숫자+배지 분리 */
-    .value-main {
-      font-size: 22px;
-      font-weight: 900;
-      color: #111827;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      line-height: 1.1;
-      white-space: nowrap;
-    }
-    .value-main .num { display:inline-block; }
-    .value-main .badge { display:inline-flex; }
-
-    .amount-positive {
-      color: #059669;
-      font-weight: 900;
-      text-shadow: 0 0 4px rgba(16, 185, 129, 0.25);
-    }
-    .amount-muted { color: #4b5563; }
-
-    /* ✅ 펄스 */
-    .pulse-up { animation: pulseUp 700ms ease-out 1; }
-    .pulse-down { animation: pulseDown 700ms ease-out 1; }
-    @keyframes pulseUp {
-      0%   { filter: drop-shadow(0 0 0 rgba(239,68,68,0.0)); transform: translateY(0); }
-      30%  { filter: drop-shadow(0 0 14px rgba(239,68,68,0.35)); transform: translateY(-1px); }
-      100% { filter: drop-shadow(0 0 0 rgba(239,68,68,0.0)); transform: translateY(0); }
-    }
-    @keyframes pulseDown {
-      0%   { filter: drop-shadow(0 0 0 rgba(59,130,246,0.0)); transform: translateY(0); }
-      30%  { filter: drop-shadow(0 0 14px rgba(59,130,246,0.35)); transform: translateY(-1px); }
-      100% { filter: drop-shadow(0 0 0 rgba(59,130,246,0.0)); transform: translateY(0); }
-    }
-
-    /* ✅ 카드 글로우 */
-    .cardGlowUp { animation: cardGlowUp 700ms ease-out 1; }
-    .cardGlowDown { animation: cardGlowDown 700ms ease-out 1; }
-    @keyframes cardGlowUp {
-      0%{ box-shadow: 0 16px 40px rgba(148,163,184,0.25); }
-      40%{ box-shadow: 0 18px 55px rgba(239,68,68,0.25); }
-      100%{ box-shadow: 0 16px 40px rgba(148,163,184,0.25); }
-    }
-    @keyframes cardGlowDown {
-      0%{ box-shadow: 0 16px 40px rgba(148,163,184,0.25); }
-      40%{ box-shadow: 0 18px 55px rgba(59,130,246,0.25); }
-      100%{ box-shadow: 0 16px 40px rgba(148,163,184,0.25); }
-    }
-
-    /* ✅ 스윕 */
-    .sweep-up::after,
-    .sweep-down::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      transform: translateX(-120%);
-      animation: sweep 700ms ease 1;
-      pointer-events:none;
-    }
-    .sweep-up::after{ background: linear-gradient(90deg, transparent, rgba(239,68,68,.22), transparent); }
-    .sweep-down::after{ background: linear-gradient(90deg, transparent, rgba(59,130,246,.22), transparent); }
-    @keyframes sweep { to { transform: translateX(120%); } }
-
-    /* ✅ 스켈레톤 */
-    .skeleton::after{
-      content:'';
-      position:absolute;
-      inset:0;
-      background: linear-gradient(90deg,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,0.55) 50%,
-        rgba(255,255,255,0) 100%);
-      transform: translateX(-100%);
-      animation: shimmer 1.1s infinite;
-      pointer-events:none;
-    }
-    @keyframes shimmer{
-      0%{ transform: translateX(-100%); }
-      100%{ transform: translateX(100%); }
-    }
-
-    /* ✅ 미니 배지 */
-    .delta-badge{
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-weight: 900;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transform: translateY(-1px);
-      white-space: nowrap;
-      user-select: none;
-    }
-    .delta-up{ background:#fee2e2; color:#dc2626; border-color:#fecaca; }
-    .delta-down{ background:#dbeafe; color:#2563eb; border-color:#bfdbfe; }
-    .delta-same{ background:#e5e7eb; color:#6b7280; border-color:#d1d5db; }
-
-    /* ✅ 상태 배지 */
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 11px;
-      border-radius: 999px;
-      font-size: 12px;
-      gap: 6px;
-    }
-    .status-dot { width: 7px; height: 7px; border-radius: 999px; }
-    .status-wait { background: #fef3c7; color: #92400e; border: 1px solid #facc15; }
-    .status-wait .status-dot { background: #facc15; }
-    .status-run  { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
-    .status-run  .status-dot { background: #22c55e; }
-    .status-done { background: #e5e7eb; color: #374151; border: 1px solid #9ca3af; }
-    .status-done .status-dot { background: #6b7280; }
-
-    .info-text {
-      font-size: 13px;
-      color: #6b7280;
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-
-    /* ✅ 진행 단계 */
-    .steps-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
-    .step { flex:1; min-width:160px; padding:10px 11px; border-radius:14px; border:1px solid #e5e7eb; background:#f9fafb; font-size:12px; color:#4b5563; position:relative; }
-    .step-title { font-size:13px; font-weight:800; margin-bottom:4px; color:#111827; }
-    .step-tag { position:absolute; top:8px; right:10px; font-size:10px; padding:2px 7px; border-radius:999px; background:#fff; border:1px solid #e5e7eb; color:#6b7280; }
-    .step.active { border-color:#4f46e5; box-shadow: 0 0 0 1px rgba(79,70,229,0.25); background:#eef2ff; }
-    .step.active .step-tag { background:#4f46e5; border-color:#4f46e5; color:#e5e7eb; }
-
-    /* ✅ 카드 헤더 */
-    .card-head-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px; flex-wrap:wrap; }
-    .mini-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-    .last-updated{ font-size:12px; color:#6b7280; }
-    .btn-refresh{ border:none; background:#f3f4f6; color:#111827; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }
-    .btn-refresh:hover{ background:#e5e7eb; }
-
-    .toggle{
-      display:inline-flex;
-      background:#f3f4f6;
-      border:1px solid #e5e7eb;
-      border-radius:999px;
-      padding:3px;
-      gap:3px;
-    }
-    .toggle button{
-      border:none;
-      background:transparent;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      cursor:pointer;
-      color:#374151;
-      font-weight:900;
-    }
-    .toggle button.active{
-      background:#111827;
-      color:#fff;
-      box-shadow: 0 8px 18px rgba(15,23,42,0.18);
-    }
-
-    .error-inline{ margin-top:10px; font-size:12px; color:#b91c1c; display:none; }
-    .error-inline.show{ display:block; }
-
-    .chart-wrap{ margin-top:12px; padding:12px; border-radius:16px; border:1px solid #e5e7eb; background:#ffffff; }
-    .chart-title-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
-    .chart-title{ font-size:13px; font-weight:900; color:#111827; }
-    canvas{ width:100%; height:120px; display:block; }
-
-    /* ✅ 소개 */
-    .intro-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; }
-    @media (max-width: 720px) { .intro-grid { grid-template-columns: minmax(0, 1fr); } }
-    .intro-badge { display:inline-flex; padding:4px 11px; border-radius:999px; font-size:11px; background:#eef2ff; color:#4f46e5; margin-bottom:10px; }
-    .intro-title { font-size:18px; font-weight:900; margin-bottom:8px; color:#111827; }
-    .intro-text { font-size:14px; color:#4b5563; line-height:1.7; white-space:pre-line; }
-    .intro-box { padding:12px; border-radius:16px; background:#f9fafb; border:1px solid #e5e7eb; margin-top:10px; }
-    .intro-box-title { font-size:14px; font-weight:800; margin-bottom:6px; color:#111827; }
-    .intro-points { font-size:13px; color:#374151; list-style:none; padding:0; margin:0; }
-    .intro-points li { margin-bottom:6px; }
-    .scenario-highlight { font-weight:900; color:#4f46e5; }
-
-    /* 진행 상태 안내: 번호와 설명을 가로 정렬 */
-    #sectionIntro .guide-steps { display:flex; flex-direction:column; }
-    #sectionIntro .gstep { display:flex; align-items:flex-start; gap:18px; padding:14px 0; border-bottom:1px solid #dce5f0; }
-    #sectionIntro .gstep:last-child { border-bottom:none; }
-    #sectionIntro .gnum { flex:0 0 34px; height:34px; display:flex; align-items:center; justify-content:center; background:#edf4ff; border:1px solid #d4e4fa; border-radius:11px; color:#15549a; font-size:12px; font-weight:700; }
-    #sectionIntro .gstep > div:last-child { flex:1; min-width:0; }
-    #sectionIntro .gstep b { display:block; color:#163a68; font-size:13px; margin-bottom:5px; }
-    #sectionIntro .gstep p { margin:0; color:#536b88; font-size:12px; line-height:1.8; }
-
-
-    /* ✅ 내 정보 */
-    .account-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px; font-size:13px; }
-    @media (max-width: 720px) { .account-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-    .acct-label { font-size:12px; color:#6b7280; margin-bottom:2px; }
-    .acct-value { font-size:14px; font-weight:600; color:#111827; }
-    .account-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:10px; }
-    .btn-gear { border:none; background:#f3f4f6; border-radius:999px; padding:5px 8px; font-size:11px; cursor:pointer; color:#4b5563; }
-    .btn-gear:hover { background:#e5e7eb; }
-
-    /* ✅ 모달 */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35);
-      display: flex; justify-content: center; align-items: center; z-index: 50;
-    }
-    .modal {
-      width: 100%; max-width: 360px; background: #ffffff; border-radius: 18px;
-      padding: 18px 18px 16px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.45);
-      border: 1px solid #e5e7eb;
-    }
-    .modal-title { font-size: 16px; font-weight: 900; margin-bottom: 10px; }
-    .modal label { display: block; font-size: 13px; margin-top: 10px; margin-bottom: 4px; color: #374151; }
-    .modal input {
-      width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid #d1d5db;
-      background: #f9fafb; font-size: 13px;
-    }
-    .modal input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 1px rgba(99, 102, 241, 0.4); background:#fff; }
-    .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:14px; }
-    .btn-secondary, .btn-primary { border-radius:999px; border:none; font-size:13px; padding:7px 14px; cursor:pointer; }
-    .btn-secondary { background:#f3f4f6; color:#374151; }
-    .btn-primary { background: linear-gradient(135deg, #6366f1, #0ea5e9); color:#f9fafb; font-weight:900; }
-
-    .hidden { display:none; }
-
-    @media (max-width: 640px) {
-      .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .nav { width: 100%; justify-content: space-between; }
-      .value-row { flex-direction: column; }
-      canvas { height: 140px; }
-    }
-  </style>
+</style>
+<link rel="stylesheet" href="../shared/legacy-dashboard-v5.css?v=5" />
 </head>
-
 <body>
-  <div class="shell">
-    <div class="frame">
-      <header class="topbar">
-        <div class="logo">AI PROCESS</div>
-        <nav class="nav">
-          <button id="tabStatus" class="active" type="button">AI 투자현황</button>
-          <button id="tabIntro" type="button">소개</button>
-          <button id="tabAccount" type="button">내 정보</button>
-          <button id="btnLogout" type="button">로그아웃</button>
-        </nav>
-      </header>
+<div class="shell">
+<header class="topbar"><div class="logo">AI 프로세스</div><nav class="nav"><button id="tabStatus" class="active">AI 투자현황</button><button id="tabIntro">소개</button><button id="tabAccount">내 정보</button><button id="btnLogout">로그아웃</button></nav></header>
 
-      <!-- 1) AI 투자현황 -->
-      <section id="sectionStatus" class="card">
-        <div class="section-title">AI 투자현황</div>
-        <div class="section-sub" id="nameLine"></div>
+<!-- 기존 대시보드의 투자/수익 요약: 투자 건수와 무관하게 항상 표시 -->
+<section id="sectionOverview" class="section card finance-overview" aria-label="AI 투자 현황 요약">
+  <div class="overview-heading"><div><span class="overview-kicker">AI PROCESS</span><h2>AI 투자현황</h2><p id="overviewWelcome">등록된 투자 현황을 확인하세요.</p></div><span id="overviewStatus" class="state-pill wait">대기중 · READY</span></div>
+  <div class="overview-balance"><span>총 평가금액</span><strong id="overviewTotal">0 원</strong></div>
+  <div class="overview-metrics"><div><span>투자중인 금액</span><strong id="overviewInvestment">0 원</strong></div><div><span>누적 수익</span><strong id="overviewProfit">0 원</strong></div><div><span>누적 수익률</span><strong id="overviewRate">0.00%</strong></div></div>
+  <p id="overviewNotice" class="overview-notice">아직 등록된 투자가 없습니다. 관리자가 투자를 등록하면 이곳에 표시됩니다.</p>
+</section>
+<section id="sectionStatus" class="section card">
+  <div class="selector-head"><h3>내 투자 내역</h3><span>투자를 선택하면 아래 상세 정보가 바뀝니다.</span></div>
+  <div class="filter-row"><button id="filterRunning" class="active">진행중</button><button id="filterDone">진행 완료</button></div>
+  <div id="investmentStrip" class="investment-strip"></div>
+  <div id="noInvestment" class="empty hidden">현재 선택한 상태에 해당하는 투자가 없습니다. 다른 상태의 투자 내역도 확인해 보세요.</div>
 
-        <div class="value-row">
-          <div class="value-box" id="boxTopAmount">
-            <div class="value-label">AI투자중인 금액</div>
-            <div class="value-main" id="amountText">
-              <span class="num" id="amountNum">- 원</span>
-              <span class="badge" id="amountBadge"></span>
-            </div>
-          </div>
-          <div class="value-box" id="boxTopStatus">
-            <div class="value-label">진행 상태</div>
-            <div id="statusBadge"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2) 실시간 수익 현황 -->
-      <section id="sectionRealtime" class="card">
-        <div class="card-head-row">
-          <div>
-            <div class="section-title" style="margin-bottom:0;">실시간 수익 현황</div>
-            <div class="section-sub" style="margin-bottom:0;">
-              AI 프로세스 투자 프로세서 기준, 현재 세션의 실시간 금액 정보입니다.
-            </div>
-          </div>
-
-          <div class="mini-actions">
-            <div class="toggle" aria-label="수익 토글">
-              <button id="toggleToday" class="active" type="button">오늘 수익</button>
-              <button id="toggleTotal" type="button">누적 수익</button>
-            </div>
-            <span class="last-updated" id="lastUpdatedText">마지막 업데이트: -</span>
-            <button class="btn-refresh" id="btnRefresh" type="button">재조회</button>
+  <div id="investmentDetail" class="detail hidden">
+    <div class="detail-head"><div class="detail-title-row"><h2 id="invCode">-</h2><button id="btnRenameInvestment" class="rename-investment" type="button" title="이름 변경" aria-label="이름 변경">✎</button></div></div>
+    <div class="schedule" id="investmentSchedule">
+      <div class="schedule-top">
+        <div class="duration"><span>진행 시간</span><strong id="invPeriod">최소 1시간 ~ 최대 30일</strong></div>
+        <div class="statebox">
+          <span>현재 상태</span>
+          <div class="state-inline"><strong id="invStateBig">-</strong><span id="invStateBadge" class="state-pill done">-</span></div>
+          <div class="state-finance">
+            <div><span>투자금액</span><b id="invAmount">- 원</b></div>
+            <div><span>수익금액</span><b id="invProfit" class="green">- 원</b></div>
           </div>
         </div>
+      </div>
+      <div class="dates range-dates"><div class="date"><span>시작</span><strong id="invStart">-</strong></div><div class="date rate-wide"><span>예상 수익률 범위</span><strong id="invRate">10% ~ 900% 이상</strong></div></div>
+      <div class="progress-head"><span>진행률</span><strong id="invProgressText">-</strong></div><div class="progress"><i id="invProgress"></i></div>
+    </div>
+    <div class="steps compact-steps"><div class="step" data-step="wait"><small>READY</small><b>대기중</b></div><div class="step" data-step="run"><small>RUNNING</small><b>진행중</b></div><div class="step" data-step="done"><small>COMPLETE</small><b>진행 완료</b></div></div>
+  </div>
+</section>
 
-        <div class="value-row">
-          <div class="value-box" id="boxInvest">
-            <div class="value-label">투자중인 금액</div>
-            <div class="value-main amount-muted">
-              <span class="num" id="amountInvestNum">- 원</span>
-              <span class="badge" id="amountInvestBadge"></span>
-            </div>
-          </div>
+<section id="sectionRealtime" class="section card">
+  <div class="realtime-head"><div><h3>실시간 수익 현황</h3><p>선택한 투자 기준의 수익과 그래프입니다.</p></div><div class="toggle"><button id="toggleToday" class="active">오늘 수익</button><button id="toggleTotal">누적 수익</button></div></div>
+  <div class="realtime-values"><div class="mini"><span id="rtProfitLabel">수익 (오늘)</span><strong class="green" id="rtProfit">- 원</strong></div><div class="mini"><span>총 금액 (투자 + 수익)</span><strong id="rtTotal">- 원</strong></div></div>
+  <div class="chart-wrap"><div class="chart-title"><span id="chartTitle">이 투자의 수익 그래프 (오늘)</span><small id="chartHint">최근 데이터 기준</small></div><canvas id="profitChart" width="920" height="180"></canvas></div>
+  <div class="chart-wrap"><div class="chart-title"><span id="timelineTitle">수익 로그 (오늘)</span><small>선택한 투자 기준</small></div><div id="profitTimeline" class="timeline"></div></div>
+  <div class="chart-wrap"><div class="chart-title"><span>투자금 변경 내역</span><small>추가 투자 시 기존 종료일 유지</small></div><div id="amountTimeline" class="timeline"></div></div>
+</section>
 
-          <div class="value-box" id="boxRealized">
-            <div class="value-label" id="realizedLabel">수익 (오늘)</div>
-            <div class="value-main amount-muted">
-              <span class="num" id="realizedNum">- 원</span>
-              <span class="badge" id="realizedBadge"></span>
-            </div>
-          </div>
+<section id="sectionStages" class="section card finance-stages">
+  <div class="realtime-head"><div><h3>AI 세션 진행 단계</h3><p>회원의 현재 진행 상황을 확인할 수 있습니다.</p></div></div>
+  <div class="overview-stage-list">
+    <div data-overview-step="wait"><span>01</span><div><strong>대기중 · READY</strong><p>투자금과 진행 조건이 확정되기 전 단계입니다.</p></div></div>
+    <div data-overview-step="run"><span>02</span><div><strong>진행중 · RUNNING</strong><p>설정된 투자금과 진행 조건에 따라 운용 중인 단계입니다.</p></div></div>
+    <div data-overview-step="done"><span>03</span><div><strong>진행 완료 · COMPLETE</strong><p>운용이 완료되어 결과를 확인할 수 있는 단계입니다.</p></div></div>
+  </div>
+</section>
+<section id="sectionIntro" class="section card hidden">
+  <div class="section-title">안내</div>
+  <div class="section-sub">AI 프로세스의 역할과 투자 진행 흐름을 상세하게 확인할 수 있습니다.</div>
+  <div class="guide-grid">
+    <div class="guide-col">
+      <h3>AI 프로세스</h3>
+      <p>AI 프로세스는 대량의 시장 데이터와 알고리즘을 활용해 시장 흐름을 분석하고, 여러 종목과 자산군에 분산 투자하는 AI 투자 프로세스입니다. 사용자는 투자 조건을 확인하고, 진행 과정과 결과를 한 화면에서 확인할 수 있습니다.</p>
 
-          <div class="value-box" id="boxTotal">
-            <div class="value-label">총 금액 (투자중 + 실현)</div>
-            <div class="value-main amount-muted">
-              <span class="num" id="totalNum">- 원</span>
-              <span class="badge" id="totalBadge"></span>
-            </div>
-          </div>
-        </div>
+      <h4>AI가 하는 일</h4>
+      <ul>
+        <li>경제 지표, 뉴스, 시황 데이터를 종합적으로 스캔</li>
+        <li>최대 30개 내외 종목으로 포트폴리오 자동 구성</li>
+        <li>시장 변화와 손익·변동성에 따른 투자 비중 조정</li>
+        <li>손익·변동성 데이터를 기반으로 전략을 반복 분석</li>
+      </ul>
 
-        <div class="chart-wrap">
-          <div class="chart-title-row">
-            <div class="chart-title" id="chartTitle">실시간 수익 그래프 (오늘)</div>
-            <span class="last-updated" id="chartHint">최근 데이터 기준</span>
-          </div>
-          <canvas id="profitChart" width="920" height="160"></canvas>
-        </div>
+      <h4>투자 진행</h4>
+      <p>개발자님과 상담 후, <strong>추천 진행 시간 및 예상 수익률을 안내받아 투자 진행을 AI에게 맡깁니다.</strong> 진행 시간은 <strong>최소 1시간 ~ 최대 30일</strong>이며, 상담 내용을 바탕으로 최종 진행 조건이 결정됩니다.</p>
+      <p class="guide-note">투자금, 진행 시간, 예상 수익률은 각 투자마다 별도로 설정되며 진행 중인 투자와 완료된 투자를 각각 확인할 수 있습니다.</p>
 
-        <!-- ✅ 수익 로그 -->
-        <div class="chart-wrap" style="margin-top:12px;">
-          <div class="chart-title-row">
-            <div class="chart-title" id="timelineTitle">수익 로그 (오늘)</div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="last-updated" id="timelineHint">최근 기록</span>
-              <button id="btnToggleTimeline" class="btn-refresh" type="button">펼치기</button>
-            </div>
-          </div>
-          <div id="profitTimeline" style="display:flex; flex-direction:column; gap:8px;"></div>
-        </div>
-
-        <div class="info-text">
-          오늘 수익은 <b>00시</b> 기준 수익 로그로 계산됩니다.
-        </div>
-
-        <div class="error-inline" id="realtimeError">
-          조회 실패: 네트워크/권한/테이블 컬럼을 확인해주세요.
-          <button class="btn-refresh" id="btnRetryInline" type="button">다시 시도</button>
-        </div>
-      </section>
-
-      <!-- 3) AI 세션 진행 단계 -->
-      <section id="sectionStatusExtra" class="card">
-        <div class="section-title">AI 세션 진행 단계</div>
-        <div class="section-sub">AI 프로세스는 아래 3단계를 거쳐 세션을 운용합니다.</div>
-
-        <div class="steps-row">
-          <div class="step" data-step="wait">
-            <div class="step-title">1단계 · 대기중</div>
-            <div class="step-tag">READY</div>
-            <div>투자금 확정 전 단계입니다.<br/>투자가 확정되면 다음 단계로 이동합니다.</div>
-          </div>
-          <div class="step" data-step="run">
-            <div class="step-title">2단계 · 진행중</div>
-            <div class="step-tag">RUNNING</div>
-            <div>설정된 금액에 맞춰 AI가 분산 투자를 수행하는 구간입니다.<br/>포트폴리오 구성과 비중 조정이 자동으로 이뤄집니다.</div>
-          </div>
-          <div class="step" data-step="done">
-            <div class="step-title">3단계 · 진행 완료</div>
-            <div class="step-tag">COMPLETE</div>
-            <div>투자 운용이 완료된 상태입니다.<br/>수익 정산을 준비합니다.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 소개 -->
-      <section id="sectionIntro" class="card hidden">
-        <div class="intro-badge">AI 기반 자동 투자 프로세스</div>
-         <div class="intro-grid">
-          <div>
-            <div class="intro-title">AI 프로세스, 스스로 판단하고 분산 투자하는 인공지능</div>
-            <p class="intro-text"> 
-              AI 프로세스는 대량의 시장 데이터와 딥러닝 알고리즘을 활용해 시장 흐름을 분석하고, 여러 종목과 자산군에 자동으로 분산 투자하는 AI 투자 프로세서입니다.
-              사용자는 투자 금액만 정하면, AI가 포트폴리오 구성부터 리스크 관리까지 전 과정을 자동으로 수행하도록 설계되어 있습니다.
-              </p>
-            <div class="intro-box">
-              <div class="intro-box-title">AI가 하는 일</div>
-              <ul class="intro-points">
-                <li>· 경제 지표, 뉴스, 시황 데이터를 종합적으로 스캔</li> 
-                <li>· 최대 30개 내외 종목으로 포트폴리오 자동 구성</li> 
-                <li>· 최소 1일 ~ 최대 30일 단위로 세션 운용</li> 
-                <li>· 손익·변동성 데이터를 기반으로 전략을 반복 학습</li>
-              </ul> 
-            </div> 
-            <div class="intro-box" style="margin-top:10px;">
-               <div class="intro-box-title">진행 상태 안내</div> 
+      <h4>진행 상태 안내</h4>
       <div class="guide-steps">
-        <div class="gstep"><div class="gnum">01</div><div><b>대기중</b><p>투자금과 진행 조건이 확정되기 전 단계입니다. 투자가 확정되면 다음 단계로 이동합니다.</p></div></div>
-        <div class="gstep"><div class="gnum">02</div><div><b>진행중</b><p>설정된 투자금과 진행 조건에 따라 AI 투자가 진행되는 단계입니다.</p></div></div>
-        <div class="gstep"><div class="gnum">03</div><div><b>진행 완료</b><p>AI프로세스 수익금의 10% 수수료 완납 후, 수익금 전액이 자동 출금 처리됩니다.</p></div></div>
-      </div>
-            </div>
-          </div> 
-           <div> 
-             <div class="intro-box">
-               <div class="intro-box-title">투자 예시 시나리오 (전문 운영 관점)</div> 
-               <p class="intro-text" style="margin-top:4px;">
-                 <span class="scenario-highlight">예시 · 50,000원을 AI에 맡기는 경우</span>
-                 1) <strong>세션 설정</strong> 
-                 · 회원분께서 50,000원을 투자하고, 약 1일 ~ 최대 30일 AI에게 맡깁니다. 
-                 · "진행중" 상태로 전환되며, AI 프로세스는 해당 금액을 운용대상으로 인식합니다.
-                 2) <strong>시장·종목 스캔</strong> 
-                 · AI 프로세스는 최근 수 시간~30일간의 가격 흐름, 거래량, 변동성, 뉴스·이슈 등 데이터를 수집합니다. 
-                 · 과거 학습 데이터와 현재 시장 상황을 비교해, 효율이 높은 섹터·종목을 선별합니다.
-                 3) <strong>포트폴리오 구성</strong> 
-                 · 전체 50,000원 중 일부는 기본 안전 구간, 일부는 공격 구간으로 나누어 비중을 설정합니다. 
-                 · 예를 들어, 변동성이 낮은 자산 60% + 변동성이 높은 자산 40% 조합으로 10~20개 내외 종목을 선정할 수 있습니다. 
-                 · 각 종목별 예상 수익·리스크에 따라 비중이 자동으로 조정됩니다. 
-                 4) <strong>세션 중 리스크 관리</strong> 
-                 · 운용 구간 동안 실시간 가격 변화를 모니터링하며, 사전 설정된 손실 한도 또는 급격한 변동이 발생할 경우 비중을 축소하거나 현금 비중을 늘립니다. 
-                 · 과도한 집중이 발생하지 않도록, 종목당·섹터당 비중 상한을 유지합니다. 
-                 5) <strong>세션 종료 및 정산</strong> 
-                 · 운용 구간이 종료되면, 해당 세션은 "진행 완료" 상태로 전환됩니다. 
-                 · 포트폴리오 전체 평가금액이 계산되고, 수익 결과가 정리됩니다. 
-                 · 이때의 성과 데이터는 다음 세션의 전략 고도화에 사용되며, 어떤 조건·종목 조합이 유리했는지 재학습에 반영됩니다. 
-                 
-                 이 과정에서 유저는 투자 금액과 세션 운용 여부만 확인하고, 실제 종목 선택·비중 조정·리스크 관리는 모두 AI 프로세스가 담당하는 구조입니다.
-                 </p> 
-             </div> 
-           </div>
-         </div>
-       </section>
-
-      <!-- 내 정보 -->
-      <section id="sectionAccount" class="card hidden">
-        <div class="account-header-row">
-          <div>
-            <div class="section-title">내 정보</div>
-            <div class="section-sub">AI 프로세스 투자 프로세서에서 사용하는 기본 회원 정보입니다.</div>
-          </div>
-          <button class="btn-gear" id="btnOpenSettings" type="button">⚙ 설정</button>
-        </div>
-
-        <div class="account-grid">
-          <div><div class="acct-label">이름</div><div class="acct-value" id="acctName">-</div></div>
-          <div><div class="acct-label">아이디</div><div class="acct-value" id="acctUsername">-</div></div>
-          <div><div class="acct-label">휴대폰</div><div class="acct-value" id="acctPhone">-</div></div>
-          <div><div class="acct-label">투자중인 금액</div><div class="acct-value" id="acctAmount">-</div></div>
-          <div><div class="acct-label">수익 실현중인 금액</div><div class="acct-value" id="acctRealized">-</div></div>
-          <div><div class="acct-label">출금 계좌</div><div class="acct-value" id="acctBank">-</div></div>
-        </div>
-
-        <div class="info-text" style="margin-top:12px;">
-          출금 계좌는 본인 확인 및 출금 처리 시에만 사용되며, 관리자 페이지에서만 조회·관리됩니다.
-        </div>
-      </section>
-
-      <!-- 설정 모달 (✅ 반드시 hidden 시작) -->
-      <div id="settingsModal" class="modal-backdrop hidden">
-        <div class="modal">
-          <div class="modal-title">내 정보 수정</div>
-          <p class="section-sub" style="margin-bottom:4px;">
-            비밀번호와 출금 계좌 정보를 변경할 수 있습니다.
-          </p>
-
-          <label for="editPassword">새 비밀번호</label>
-          <input type="password" id="editPassword" placeholder="변경하지 않으려면 비워두세요" />
-
-          <label for="editBank">출금 계좌</label>
-          <input type="text" id="editBank" placeholder="예: 국민 123456-01-123456" />
-
-          <div class="modal-actions">
-            <button class="btn-secondary" id="btnCancelSettings" type="button">취소</button>
-            <button class="btn-primary" id="btnSaveSettings" type="button">저장하기</button>
-          </div>
-        </div>
+        <div class="gstep"><div class="gnum">01</div><div><b>대기중 · READY</b><p>투자금과 진행 조건이 확정되기 전 단계입니다. 투자가 확정되면 다음 단계로 이동합니다.</p></div></div>
+        <div class="gstep"><div class="gnum">02</div><div><b>진행중 · RUNNING</b><p>설정된 투자금과 진행 조건에 따라 AI 투자가 진행되는 단계입니다.</p></div></div>
+        <div class="gstep"><div class="gnum">03</div><div><b>진행 완료 · COMPLETE</b><p>설정된 투자 진행이 완료된 상태입니다. 수익 정산을 준비합니다.</p></div></div>
+        <div class="gstep"><div class="gnum">04</div><div><b>수익 정산 · SETTLING</b><p>AI프로세스 진행 완료 시 원금 제외한 순수익 금액의 선 수수료 10% 완납 후 즉시 출금 됩니다.</p></div></div>
       </div>
 
+      <h4>이런 분께 적합합니다</h4>
+      <ul>
+        <li>세부 종목 선택보다 전체 전략과 결과에 집중하고 싶은 분</li>
+        <li>최소 1시간 ~ 최대 30일 구간의 투자를 선호하는 분</li>
+        <li>AI 기반 의사결정과 분산 투자를 경험하고 싶은 분</li>
+      </ul>
+    </div>
+
+    <div class="guide-col">
+      <div class="scenario-head">
+        <h3>투자 예시 시나리오</h3>
+        <span class="scenario-badge">전문 운영 관점</span>
+      </div>
+      <p class="guide-note">예시 · 50,000원을 AI에 맡기는 경우</p>
+      <div class="guide-steps scenario-steps">
+        <div class="gstep">
+          <div class="gnum">01</div>
+          <div><b>상담 및 조건 설정</b><p>개발자님과 상담 후 추천 진행 시간과 예상 수익률을 안내받습니다. 50,000원의 투자금과 최종 진행 조건이 확정되면 해당 투자는 <strong>진행중</strong> 상태로 전환됩니다.</p></div>
+        </div>
+        <div class="gstep">
+          <div class="gnum">02</div>
+          <div><b>시장·종목 스캔</b><p>최근 수 시간부터 중장기 가격 흐름, 거래량, 변동성, 뉴스·이슈 등의 데이터를 수집하고 과거 학습 데이터와 현재 시장 상황을 비교해 효율이 높은 섹터와 종목을 선별합니다.</p></div>
+        </div>
+        <div class="gstep">
+          <div class="gnum">03</div>
+          <div><b>포트폴리오 구성</b><p>투자금 일부는 기본 안전 구간, 일부는 공격 구간으로 나누어 비중을 설정합니다. 예를 들어 변동성이 낮은 자산 60%와 높은 자산 40%를 조합해 10~20개 내외 종목을 구성하고, 예상 수익과 리스크에 따라 비중을 조정합니다.</p></div>
+        </div>
+        <div class="gstep">
+          <div class="gnum">04</div>
+          <div><b>진행 중 리스크 관리</b><p>진행 구간 동안 가격 변화를 모니터링하고, 사전 설정된 손실 한도 또는 급격한 변동이 발생할 경우 비중을 축소하거나 현금 비중을 늘립니다. 특정 종목이나 섹터에 과도하게 집중되지 않도록 비중 상한을 유지합니다.</p></div>
+        </div>
+        <div class="gstep">
+          <div class="gnum">05</div>
+          <div><b>진행 완료 및 정산</b><p>설정된 진행 구간이 종료되면 해당 투자는 <strong>진행 완료</strong> 상태로 전환됩니다. 전체 평가금액과 수익 결과를 정리하고, 진행 중 생성된 성과 데이터는 이후 전략 분석에 반영됩니다.</p></div>
+        </div>
+      </div>
+      <p class="scenario-footer">이 과정에서 사용자는 투자금, 진행 시간, 예상 수익률과 현재 진행 상태를 확인하고, 실제 종목 선택·비중 조정·리스크 관리 과정은 AI 프로세스가 담당하는 구조입니다.</p>
     </div>
   </div>
+</section>
+
+<section id="sectionAccount" class="section card account hidden"><div class="account-head"><div><div class="section-title">내 정보</div><div class="section-sub">AI 프로세스에서 사용하는 기본 회원 정보입니다.</div></div><button id="btnSettings" class="btn soft">설정</button></div><div class="account-row"><span>이름</span><strong id="acctName">-</strong></div><div class="account-row"><span>아이디</span><strong id="acctUsername">-</strong></div><div class="account-row"><span>휴대폰</span><strong id="acctPhone">-</strong></div><div class="account-row"><span>출금계좌</span><strong id="acctBank">-</strong></div><div class="account-row"><span>총 투자금액</span><strong id="acctAmount">-</strong></div><div class="account-row"><span>총 수익</span><strong class="green" id="acctProfit">-</strong></div></section>
+</div>
+
+<div id="settingsModal" class="modal-wrap"><div class="modal"><h3>설정</h3><p>비밀번호와 출금계좌를 변경할 수 있습니다.</p><div class="field"><label>새 비밀번호</label><input id="editPw" type="password" placeholder="변경하지 않으려면 비워두세요"></div><div class="field"><label>출금계좌</label><input id="editBank" type="text" placeholder="예: 국민은행 123456-01-123456" autocomplete="off"></div><div class="modal-actions"><button id="btnSettingsClose" class="btn">취소</button><button id="btnSettingsSave" class="btn soft">저장</button></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
-<!-- ✅ 반드시 config/sb/app 먼저 로드 -->
-<script src="../shared/config.js"></script>
-<script src="../shared/sb.js"></script>
-<script src="../shared/app.js"></script>
-
-<!-- ✅ 여기에서 sb/supabase 별칭을 만들어야 합니다 -->
+<script src="../shared/config.js?v=20260815-1128"></script><script src="../shared/sb.js?v=20260815-1128"></script><script src="../shared/app.js?v=20260815-1128"></script>
 <script>
-  // Supabase 클라이언트는 sb.js에서 생성됩니다
-  var sb = window.raon.sb();
-  // 기존 코드 호환: supabase.from(...), supabase.channel(...)
-  var supabase = sb;
+const sb=(window.aiProcessor&&typeof window.aiProcessor.sb==='function')?window.aiProcessor.sb():null;
+let user=null,userRow=null,investments=[],selectedId=null,filterMode='running',profitMode='today',reloadTimer=null;
+const $=id=>document.getElementById(id); const money=n=>Math.round(Number(n||0)).toLocaleString('ko-KR')+' 원';
+function investmentLabel(i){const n=String(i?.display_name||'').trim();return n||'AI 프로세스 진행 현황'}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function statusClass(s){return s==='진행중'?'run':s==='대기중'?'wait':'done'};
+function fmtDate(v){if(!v)return '-';const d=new Date(v);if(Number.isNaN(d.getTime()))return '-';return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
+function durationText(i){if(i.is_indefinite)return '기간 미정';const m=Number(i.duration_minutes||0);if(m%1440===0)return `${m/1440}일 0시간`;if(m%60===0)return `${m/60}시간 0분`;return `${Math.floor(m/60)}시간 ${m%60}분`}
+function assignedText(i){const v=i.target_return_pct;return v==null?'-':`${Number(v).toFixed(2).replace(/\.00$/,'')}%`}
+function progressOf(i){if(i.status==='진행 완료')return 100;if(i.is_indefinite||!i.started_at||!i.ends_at)return 0;const s=new Date(i.started_at).getTime(),e=new Date(i.ends_at).getTime(),n=Date.now();return Math.max(0,Math.min(100,((n-s)/(e-s))*100))}
+function requireLogin(){try{user=JSON.parse(localStorage.getItem('ai_processor_current_user')||'null')}catch{}if(!user){location.href='index.html';return false}return true}
+function setTab(tab){['Status','Intro','Account'].forEach(x=>{$('section'+x)?.classList.toggle('hidden',x.toLowerCase()!==tab);$('tab'+x)?.classList.toggle('active',x.toLowerCase()===tab)});$('sectionRealtime')?.classList.toggle('hidden',tab!=='status');$('sectionOverview')?.classList.toggle('hidden',tab!=='status');$('sectionStages')?.classList.toggle('hidden',tab!=='status')}
+function updateOverview(){
+  if(!userRow)return;
+  const amount=investments.reduce((sum,i)=>sum+Number(i.amount||0),0);
+  const profit=investments.reduce((sum,i)=>sum+Number(i.realized_amount||0),0);
+  const running=investments.some(i=>i.status==='진행중');
+  const completed=investments.length>0&&investments.every(i=>i.status==='진행 완료');
+  const key=running?'run':completed?'done':'wait';
+  $('overviewWelcome').textContent=(userRow.name||userRow.username||'회원')+'님의 투자 현황';
+  $('overviewTotal').textContent=money(amount+profit);
+  $('overviewInvestment').textContent=money(amount);
+  $('overviewProfit').textContent=(profit>0?'+':'')+money(profit);
+  $('overviewProfit').className=profit<0?'red':profit>0?'green':'';
+  $('overviewRate').textContent=(amount>0?(profit/amount*100).toFixed(2):'0.00')+'%';
+  $('overviewRate').className=profit<0?'red':profit>0?'green':'';
+  $('overviewStatus').textContent=key==='run'?'진행중 · RUNNING':key==='done'?'진행 완료 · COMPLETE':'대기중 · READY';
+  $('overviewStatus').className='state-pill '+key;
+  $('overviewNotice').textContent=investments.length===0?'아직 등록된 투자가 없습니다. 관리자가 투자를 등록하면 이곳에 표시됩니다.':key==='run'?'현재 진행 중인 투자 '+investments.filter(i=>i.status==='진행중').length+'건 · 상세 내역은 아래에서 선택하세요.':key==='done'?'모든 투자가 완료되었습니다. 진행 완료 탭에서 내역을 확인하세요.':'투자 진행을 기다리는 중입니다. 상세 내역은 아래에서 확인하세요.';
+  document.querySelectorAll('[data-overview-step]').forEach(el=>el.classList.toggle('is-current',el.dataset.overviewStep===key));
+}
+
+async function loadAll(keep=true){if(!sb)return alert('Supabase 연결을 확인해주세요.');const {data:u,error:ue}=await sb.from('app_users').select('*').eq('username',user.username).maybeSingle();if(ue||!u)throw ue||new Error('사용자를 찾을 수 없습니다.');userRow=u;const {data,error}=await sb.from('app_investments').select('*').eq('user_id',u.id).order('created_at',{ascending:false});if(error)throw error;investments=data||[];if(!keep||!investments.some(x=>x.id===selectedId))selectedId=investments.find(x=>x.status==='진행중')?.id||investments[0]?.id||null;renderSelector();updateOverview();renderSelected();fillAccount();subscribeRealtime()}
+function visibleInvestments(){return investments.filter(x=>filterMode==='running'?x.status!=='진행 완료':x.status==='진행 완료')}
+function renderSelector(){const list=visibleInvestments();$('investmentStrip').innerHTML='';$('noInvestment').classList.toggle('hidden',list.length>0);list.forEach(i=>{const b=document.createElement('button');b.className='investment-item'+(i.id===selectedId?' active':'');b.innerHTML=`<div class="inv-top"><div class="inv-title-wrap"><div class="inv-code">${escapeHtml(investmentLabel(i))}</div><span class="inv-name-edit" title="이름 변경" aria-label="이름 변경">✎</span></div><span class="badge ${statusClass(i.status)}">${i.status}</span></div><div class="inv-sub">AI 프로세스 · ${fmtDate(i.started_at)} 시작</div><div class="inv-meta"><span>${money(i.amount)}</span><span class="inv-rate-range"><small>예상 수익률</small><b>10% ~ 900% 이상</b></span></div>`;b.onclick=()=>{selectedId=i.id;renderSelector();renderSelected()};const edit=b.querySelector('.inv-name-edit');if(edit)edit.onclick=e=>{e.stopPropagation();editInvestmentName(i.id)};$('investmentStrip').appendChild(b)});if(list.length&&!list.some(x=>x.id===selectedId)){selectedId=list[0].id;renderSelector();renderSelected()}}
+async function editInvestmentName(id){const i=investments.find(x=>x.id===id);if(!i||!userRow)return;const current=String(i.display_name||'');const next=window.prompt('이 투자에 표시할 이름을 입력해주세요.\n비워두면 기본 이름으로 돌아갑니다.',current);if(next===null)return;const name=next.trim();if(name.length>50)return alert('이름은 최대 50자까지 입력할 수 있습니다.');const {error}=await sb.from('app_investments').update({display_name:name||null}).eq('id',i.id).eq('user_id',userRow.id);if(error){console.error(error);return alert('이름 변경에 실패했습니다. Supabase에 display_name 컬럼이 추가되었는지 확인해주세요.')}i.display_name=name||null;renderSelector();renderSelected()}
+async function renderSelected(){const i=investments.find(x=>x.id===selectedId);$('investmentDetail').classList.toggle('hidden',!i);$('sectionRealtime').classList.toggle('hidden',$('sectionStatus').classList.contains('hidden'));if(!i){$('rtProfitLabel').textContent=profitMode==='today'?'수익 (오늘)':'수익 (누적)';$('rtProfit').textContent='0 원';$('rtTotal').textContent='0 원';$('chartTitle').textContent=profitMode==='today'?'실시간 수익 그래프 (오늘)':'실시간 수익 그래프 (누적)';$('timelineTitle').textContent=profitMode==='today'?'수익 로그 (오늘)':'수익 로그 (최근 기록)';$('chartHint').textContent='투자 등록 대기';drawChart([]);$('profitTimeline').innerHTML='<div class="empty">투자 등록 후 수익 로그가 표시됩니다.</div>';$('amountTimeline').innerHTML='<div class="empty">투자금 변경 기록이 없습니다.</div>';return}$('invCode').textContent=investmentLabel(i);$('invAmount').textContent=money(i.amount);const profitNum=Number(i.realized_amount||0);$('invProfit').textContent=(profitNum>=0?'+':'')+money(profitNum);$('invProfit').classList.toggle('green',profitNum>=0);$('invProfit').classList.toggle('red',profitNum<0);$('invPeriod').textContent='최소 1시간 ~ 최대 30일';$('invStateBig').textContent=i.status;$('invStateBadge').textContent=i.status;const sClass=statusClass(i.status);$('invStateBadge').className='state-pill '+sClass;$('investmentSchedule').className='schedule state-'+sClass;$('invStart').textContent=fmtDate(i.started_at);$('invRate').textContent='10% ~ 900% 이상';const p=progressOf(i);$('invProgressText').textContent=i.is_indefinite?(i.status==='진행중'?'진행중':'-'):`${p.toFixed(0)}%`;$('invProgress').style.width=i.is_indefinite?(i.status==='진행중'?'100%':'0%'):`${p}%`;document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));document.querySelector(`.step[data-step="${i.status==='진행중'?'run':i.status==='진행 완료'?'done':'wait'}"]`)?.classList.add('active');await loadInvestmentLogs(i)}
+function localDayStart(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).toISOString()}
+async function loadInvestmentLogs(i){let q=sb.from('app_profit_logs').select('amount_delta,created_at,source_type').eq('investment_id',i.id).in('source_type',['payout','process_payout']);if(profitMode==='today'){q=q.gte('created_at',localDayStart()).order('created_at',{ascending:true}).limit(1000);}else{q=q.order('created_at',{ascending:false}).limit(200);}const {data,error}=await q;if(error){console.error(error);return}const logs=profitMode==='today'?(data||[]):[...(data||[])].reverse();const profit=logs.reduce((s,x)=>s+Number(x.amount_delta||0),0);const shown=profitMode==='today'?profit:Number(i.realized_amount||0);$('rtProfitLabel').textContent=profitMode==='today'?'수익 (오늘)':'수익 (누적)';$('rtProfit').textContent=(shown>=0?'+':'')+money(shown);$('rtTotal').textContent=money(Number(i.amount||0)+shown);$('chartTitle').textContent=`이 투자의 수익 그래프 (${profitMode==='today'?'오늘':'누적'})`;$('timelineTitle').textContent=`수익 로그 (${profitMode==='today'?'오늘':'최근 기록'})`;let c=profitMode==='today'?0:Number(i.realized_amount||0)-logs.reduce((s,x)=>s+Number(x.amount_delta||0),0);const series=[c];logs.forEach(x=>{c+=Number(x.amount_delta||0);series.push(c)});drawChart(series);let rq=sb.from('app_realized_logs').select('delta,created_at,note').eq('user_id',userRow.id).eq('note','admin-profit');if(profitMode==='today'){rq=rq.gte('created_at',localDayStart()).order('created_at',{ascending:false}).limit(200);}else{rq=rq.order('created_at',{ascending:false}).limit(200);}const {data:adminLogs,error:adminLogError}=await rq;if(adminLogError)console.error(adminLogError);const desc=[...logs.map(x=>({amount_delta:x.amount_delta,created_at:x.created_at})),...(adminLogs||[]).map(x=>({amount_delta:x.delta,created_at:x.created_at}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,60);$('profitTimeline').innerHTML=desc.length?desc.map(x=>`<div class="timeline-row"><time>${fmtDate(x.created_at)}</time><span>${Number(x.amount_delta)>=0?'수익':'손실'}</span><strong class="${Number(x.amount_delta)>=0?'up':'down'}">${Number(x.amount_delta)>=0?'+':''}${money(x.amount_delta)}</strong></div>`).join(''):'<div class="empty">수익 기록이 없습니다.</div>';const {data:al}=await sb.from('app_investment_amount_logs').select('delta,note,created_at').eq('investment_id',i.id).order('created_at',{ascending:false});$('amountTimeline').innerHTML=(al||[]).length?(al||[]).map(x=>`<div class="timeline-row"><time>${fmtDate(x.created_at)}</time><span>${x.note||'투자금 변경'}</span><strong>${Number(x.delta)>=0?'+':''}${money(x.delta)}</strong></div>`).join(''):'<div class="empty">투자금 변경 기록이 없습니다.</div>'}
+function drawChart(values){const c=$('profitChart'),ctx=c.getContext('2d');const dpr=window.devicePixelRatio||1,w=c.clientWidth||920,h=c.clientHeight||180;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.strokeStyle='#edf1f5';ctx.lineWidth=1;for(let y=20;y<h;y+=(h-30)/3){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}if(!values||values.length<2)values=[0,0];let min=Math.min(...values),max=Math.max(...values);if(max===min){max+=1;min-=1}const pad=12,step=(w-pad*2)/(values.length-1);ctx.beginPath();values.forEach((v,n)=>{const x=pad+n*step,y=pad+(max-v)/(max-min)*(h-pad*2);n?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.strokeStyle='#4473a6';ctx.lineWidth=2.8;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke()}
+function fillAccount(){if(!userRow)return;const amount=investments.reduce((s,x)=>s+Number(x.amount||0),0),profit=investments.reduce((s,x)=>s+Number(x.realized_amount||0),0);$('acctName').textContent=userRow.name||'-';$('acctUsername').textContent=userRow.username||'-';$('acctPhone').textContent=userRow.phone||'-';$('acctBank').textContent=userRow.bank_account||'-';$('acctAmount').textContent=money(amount);$('acctProfit').textContent=(profit>=0?'+':'')+money(profit)}
+let channel=null;function subscribeRealtime(){if(!userRow||channel)return;channel=sb.channel('multi-invest-user-'+userRow.id).on('postgres_changes',{event:'*',schema:'public',table:'app_investments',filter:`user_id=eq.${userRow.id}`},scheduleReload).on('postgres_changes',{event:'INSERT',schema:'public',table:'app_profit_logs',filter:`user_id=eq.${userRow.id}`},scheduleReload).on('postgres_changes',{event:'INSERT',schema:'public',table:'app_realized_logs',filter:`user_id=eq.${userRow.id}`},scheduleReload).subscribe()}function scheduleReload(){clearTimeout(reloadTimer);reloadTimer=setTimeout(()=>loadAll(true).catch(console.error),450)}
+$('btnRenameInvestment').onclick=()=>{if(selectedId)editInvestmentName(selectedId)};$('filterRunning').onclick=()=>{filterMode='running';$('filterRunning').classList.add('active');$('filterDone').classList.remove('active');renderSelector()};$('filterDone').onclick=()=>{filterMode='done';$('filterDone').classList.add('active');$('filterRunning').classList.remove('active');renderSelector()};$('toggleToday').onclick=()=>{profitMode='today';$('toggleToday').classList.add('active');$('toggleTotal').classList.remove('active');renderSelected()};$('toggleTotal').onclick=()=>{profitMode='total';$('toggleTotal').classList.add('active');$('toggleToday').classList.remove('active');renderSelected()};$('tabStatus').onclick=()=>setTab('status');$('tabIntro').onclick=()=>setTab('intro');$('tabAccount').onclick=()=>setTab('account');$('btnLogout').onclick=()=>window.aiProcessor.logout('index.html');$('btnSettings').onclick=()=>{$('editBank').value=userRow?.bank_account||'';$('settingsModal').classList.add('on')};$('btnSettingsClose').onclick=()=>$('settingsModal').classList.remove('on');$('btnSettingsSave').onclick=async()=>{const pw=$('editPw').value.trim(),bank=$('editBank').value.trim();const payload={bank_account:bank||null,updated_at:new Date().toISOString()};if(pw)payload.password_hash=pw;const {error}=await sb.from('app_users').update(payload).eq('id',userRow.id);if(error)return alert('저장 중 오류가 발생했습니다.');userRow.bank_account=bank||null;if(pw)userRow.password_hash=pw;fillAccount();$('editPw').value='';$('settingsModal').classList.remove('on');alert('회원 정보가 변경되었습니다.')};
+window.addEventListener('resize',()=>{const i=investments.find(x=>x.id===selectedId);if(i)loadInvestmentLogs(i)});document.addEventListener('DOMContentLoaded',()=>{if(!requireLogin())return;loadAll(false).catch(e=>{console.error(e);alert('데이터를 불러오지 못했습니다. SQL 설치 여부를 확인해주세요.')});setInterval(()=>{if(!$('sectionStatus').classList.contains('hidden'))renderSelected()},30000)});
 </script>
-
-<!-- ✅ 그 다음에 기존 dashboard 스크립트가 와야 합니다 -->
-<script>
-  /* =========================
-     Supabase 연결
-  ========================= */
-// ✅ 이후 코드는 supabase/sb를 사용
-  let currentUser = null;
-  let currentUserDbId = null;
-
-  let rtChannel = null;
-  let rtDebounceTimer = null;
-  let rtSubscribedUserId = null;
-
-  let timelineExpanded = false;
-
-    function rtTriggerReload(reason = '') {
-      clearTimeout(rtDebounceTimer);
-      rtDebounceTimer = setTimeout(() => {
-        // console.log('[Realtime] reload by:', reason);
-        loadStatus();
-      }, 250);
-    }
-
-    /* =========================
-      상태 변수
-    ========================= */
-    let profitMode = 'today'; // 'today' | 'total'
-    let lastUpdatedAt = null;
-
-    let prev = {
-      amount: 0,
-      todayProfit: 0,
-      totalProfit: 0,
-      totalAsset: 0,
-      initialized: false,
-      suppressDeltaOnce: false,
-    };
-
-    /* =========================
-      유틸
-    ========================= */
-    function formatAmount(value) {
-      if (value == null || isNaN(value)) return '- 원';
-      return Number(value).toLocaleString('ko-KR') + ' 원';
-    }
-
-    // ✅ 로컬 날짜 키 (오늘 수익 리셋 판단용)
-    function getLocalDateKey(d = new Date()) {
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
-    }
-
-    // ✅ 특정 값(예: 투자중 금액) 증감배지는 "변경 1회"만 보여주기
-    // - DB 값이 바뀐 직후 첫 조회에만 배지를 띄우고,
-    // - 그 즉시 기준값을 업데이트해 새로고침/재조회 시 다시 안 뜨게 함.
-    function oneTimeDelta(storageKey, userId, currentValue) {
-      const key = `${storageKey}:${userId}`;
-      const prevRaw = localStorage.getItem(key);
-      const prevVal = prevRaw == null ? null : Number(prevRaw);
-
-      if (prevVal == null || isNaN(prevVal)) {
-        localStorage.setItem(key, String(Number(currentValue || 0)));
-        return 0;
-      }
-
-      const cur = Number(currentValue || 0);
-      const delta = cur - prevVal;
-
-      if (delta !== 0) {
-        localStorage.setItem(key, String(cur));
-        return delta;
-      }
-      return 0;
-    }
-
-
-    function maskPhone(phone) {
-      if (!phone) return '-';
-      const digits = String(phone).replace(/[^0-9]/g, '');
-      if (digits.length < 8) return phone;
-      const head = digits.slice(0, 3);
-      const tail = digits.slice(-4);
-      return head + '-****-' + tail;
-    }
-
-    function formatKST(isoString) {
-      try {
-        const d = new Date(isoString);
-        return d.toLocaleString('ko-KR', { hour12:false });
-      } catch (e) {
-        return isoString || '-';
-      }
-    }
-
-    function relativeTime(fromDate) {
-      if (!fromDate) return '-';
-      const diff = Date.now() - fromDate.getTime();
-      const sec = Math.floor(diff / 1000);
-      if (sec < 10) return '방금';
-      if (sec < 60) return sec + '초 전';
-      const min = Math.floor(sec / 60);
-      if (min < 60) return min + '분 전';
-      const hr = Math.floor(min / 60);
-      if (hr < 24) return hr + '시간 전';
-      return Math.floor(hr / 24) + '일 전';
-    }
-
-    function setLastUpdated(date) {
-      lastUpdatedAt = date;
-      const el = document.getElementById('lastUpdatedText');
-      if (el) el.textContent = '마지막 업데이트: ' + relativeTime(lastUpdatedAt);
-    }
-
-    function setRealtimeError(show, msg='') {
-      const box = document.getElementById('realtimeError');
-      if (!box) return;
-      if (!show) { box.classList.remove('show'); return; }
-      if (msg) box.firstChild.textContent = msg + ' ';
-      box.classList.add('show');
-    }
-
-    function setSkeleton(on) {
-      const ids = ['boxTopAmount','boxInvest','boxRealized','boxTotal'];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (on) el.classList.add('skeleton');
-        else el.classList.remove('skeleton');
-      });
-    }
-
-    /* =========================
-      배지(유지)
-    ========================= */
-    function badgeKey(id) {
-      // ✅ FINAL: 배지는 모드(오늘/누적)와 무관하게 동일해야 하므로 profitMode를 키에 포함하지 않음
-      return "raonai_badge_" + id;
-    }
-
-    function restoreBadge(badgeEl, id) {
-      try {
-        const raw = localStorage.getItem(badgeKey(id));
-        if (!raw) return;
-        const obj = JSON.parse(raw);
-        if (obj && obj.text && obj.className) {
-          badgeEl.textContent = obj.text;
-          badgeEl.className = obj.className;
-        }
-      } catch (e) {}
-    }
-
-    
-    /* =========================
-      ✅ FINAL: 수익 증감배지(이벤트 기준 단일화)
-      - app_profit_logs(payout/auto) 최신 1건을 '마지막 수익 이벤트'로 간주
-      - 새로고침/재조회에도 유지 (localStorage)
-      - 오늘/누적/총금액 모두 동일 배지
-    ========================= */
-    function profitEventStoreKey(userId) {
-      return "raonai_profit_event_" + userId;
-    }
-
-    function getLastProfitEventDelta(userId, recentLogsAsc) {
-      // recentLogsAsc: 오래된 -> 최신(배열 마지막이 최신)
-      let latest = null;
-      if (Array.isArray(recentLogsAsc) && recentLogsAsc.length) {
-        latest = recentLogsAsc[recentLogsAsc.length - 1];
-      }
-
-      const key = profitEventStoreKey(userId);
-      let stored = null;
-      try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) {}
-
-      // 로그가 전혀 없으면 배지 제거
-      if (!latest) {
-        try { localStorage.removeItem(key); } catch (e) {}
-        return { delta: 0, sig: null, at: null };
-      }
-
-      const delta = Number(latest.delta || 0);
-      const at = latest.created_at || null;
-      // ✅ 같은 금액이 반복되어도 '새 이벤트'면 갱신되도록 created_at을 포함해 시그니처 생성
-      const sig = String(at || "") + "|" + String(delta);
-
-      // 저장된 이벤트와 동일하면 저장값 유지 (배지 유지 목적)
-      if (stored && stored.sig === sig) {
-        return { delta: Number(stored.delta || 0), sig: stored.sig, at: stored.at || null };
-      }
-
-      // 새 이벤트면 갱신 저장
-      const next = { delta, sig, at };
-      try { localStorage.setItem(key, JSON.stringify(next)); } catch (e) {}
-      return next;
-    }
-
-function renderDeltaBadge(badgeEl, delta, opts = {}) {
-      if (!badgeEl) return;
-
-      const persistId = opts.persistId || null;
-      const keepOnZero = (opts.keepOnZero !== false);   // default true
-      const clearOnZero = !!opts.clearOnZero;           // default false
-
-      // ✅ 저장된 배지 먼저 복원 (새로고침/재조회에도 유지)
-      if (persistId) restoreBadge(badgeEl, persistId);
-
-      // ✅ 변동 없으면:
-      // - keepOnZero=true  => 기존(저장된) 배지 그대로 유지
-      // - clearOnZero=true => 배지 제거(+저장값도 제거)
-      if (!delta) {
-        if (!keepOnZero || clearOnZero) {
-          badgeEl.className = '';
-          badgeEl.textContent = '';
-          if (persistId) {
-            try { localStorage.removeItem(badgeKey(persistId)); } catch (e) {}
-          }
-        }
-        return;
-      }
-
-      const cls = 'delta-badge ' + (delta > 0 ? 'delta-up' : 'delta-down');
-      const txt = (delta > 0 ? '▲ ' : '▼ ') + Math.abs(delta).toLocaleString('ko-KR') + '원';
-
-      badgeEl.className = cls;
-      badgeEl.textContent = txt;
-
-      if (persistId) {
-        try { localStorage.setItem(badgeKey(persistId), JSON.stringify({ className: cls, text: txt })); } catch (e) {}
-      }
-    }
-
-
-    /* =========================
-      애니메이션
-    ========================= */
-    function animateMoney(numEl, from, to, durationMs = 650) {
-      if (!numEl) return;
-      if (!Number.isFinite(from)) from = 0;
-      if (!Number.isFinite(to)) to = 0;
-
-      if (from === to) {
-        numEl.textContent = formatAmount(to);
-        return;
-      }
-
-      const start = performance.now();
-      const diff = to - from;
-
-      function tick(now) {
-        const t = Math.min(1, (now - start) / durationMs);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const val = Math.round(from + diff * eased);
-        numEl.textContent = formatAmount(val);
-        if (t < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }
-
-    function applyPulse(el, direction) {
-      if (!el) return;
-      el.classList.remove('pulse-up','pulse-down');
-      void el.offsetWidth;
-      if (direction === 'up') el.classList.add('pulse-up');
-      if (direction === 'down') el.classList.add('pulse-down');
-    }
-
-    function applyCardGlow(cardEl, direction) {
-      if (!cardEl) return;
-      cardEl.classList.remove('cardGlowUp','cardGlowDown');
-      void cardEl.offsetWidth;
-      if (direction === 'up') cardEl.classList.add('cardGlowUp');
-      if (direction === 'down') cardEl.classList.add('cardGlowDown');
-    }
-
-    function applySweep(cardEl, direction) {
-      if (!cardEl) return;
-      cardEl.classList.remove('sweep-up','sweep-down');
-      void cardEl.offsetWidth;
-      if (direction === 'up') cardEl.classList.add('sweep-up');
-      if (direction === 'down') cardEl.classList.add('sweep-down');
-    }
-
-    /* =========================
-      탭 전환
-    ========================= */
-    function showTab(tab) {
-      const tabStatus = document.getElementById('tabStatus');
-      const tabIntro = document.getElementById('tabIntro');
-      const tabAccount = document.getElementById('tabAccount');
-
-      const sectionStatus = document.getElementById('sectionStatus');
-      const sectionRealtime = document.getElementById('sectionRealtime');
-      const sectionStatusExtra = document.getElementById('sectionStatusExtra');
-      const sectionIntro = document.getElementById('sectionIntro');
-      const sectionAccount = document.getElementById('sectionAccount');
-
-      tabStatus.classList.toggle('active', tab === 'status');
-      tabIntro.classList.toggle('active', tab === 'intro');
-      tabAccount.classList.toggle('active', tab === 'account');
-
-      const isStatus = tab === 'status';
-      const isIntro = tab === 'intro';
-      const isAccount = tab === 'account';
-
-      sectionStatus.classList.toggle('hidden', !isStatus);
-      sectionRealtime.classList.toggle('hidden', !isStatus);
-      sectionStatusExtra.classList.toggle('hidden', !isStatus);
-
-      sectionIntro.classList.toggle('hidden', !isIntro);
-      sectionAccount.classList.toggle('hidden', !isAccount);
-    }
-
-    /* =========================
-      상태/단계/내정보 렌더
-    ========================= */
-    function renderStatus(status) {
-      const badge = document.getElementById('statusBadge');
-      if (!badge) return;
-      badge.innerHTML = '';
-
-      const wrapper = document.createElement('span');
-      wrapper.classList.add('status-pill');
-      const dot = document.createElement('span');
-      dot.classList.add('status-dot');
-      const text = document.createElement('span');
-
-      if (!status || status === '대기중') {
-        wrapper.classList.add('status-wait');
-        text.textContent = '대기중';
-      } else if (status === '진행중') {
-        wrapper.classList.add('status-run');
-        text.textContent = '진행중';
-      } else {
-        wrapper.classList.add('status-done');
-        text.textContent = '진행 완료';
-      }
-
-      wrapper.appendChild(dot);
-      wrapper.appendChild(text);
-      badge.appendChild(wrapper);
-    }
-
-    function renderSteps(status) {
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-
-      let key = 'wait';
-      if (status === '진행중') key = 'run';
-      else if (status === '진행 완료') key = 'done';
-
-      const target = document.querySelector('.step[data-step="' + key + '"]');
-      if (target) target.classList.add('active');
-    }
-
-    function fillAccountInfo(userFromDb) {
-      const merged = { ...(currentUser||{}), ...(userFromDb||{}) };
-      const elName = document.getElementById('acctName');
-      const elUsername = document.getElementById('acctUsername');
-      const elPhone = document.getElementById('acctPhone');
-      const elAmount = document.getElementById('acctAmount');
-      const elRealized = document.getElementById('acctRealized');
-      const elBank = document.getElementById('acctBank');
-
-      if (elName) elName.textContent = merged.name || '-';
-      if (elUsername) elUsername.textContent = merged.username || '-';
-      if (elPhone) elPhone.textContent = merged.phone ? maskPhone(merged.phone) : '-';
-      if (elAmount) elAmount.textContent = formatAmount(merged.amount || 0);
-      if (elRealized) elRealized.textContent = formatAmount(merged.realized_amount || 0);
-      if (elBank) elBank.textContent = merged.bank_account || '-';
-    }
-
-    /* =========================
-      Realtime 구독 (중복/변수 꼬임 제거 완료)
-    ========================= */
-    function subscribeRealtime(userRow) {
-      try {
-        const userId = userRow.id;
-
-        // 같은 유저면 재구독 안함
-        if (rtChannel && rtSubscribedUserId === userId) return;
-        rtSubscribedUserId = userId;
-
-        // 기존 채널 정리
-        if (rtChannel) {
-          sb.removeChannel(rtChannel);
-          rtChannel = null;
-        }
-
-        rtChannel = supabase
-          .channel('raonai-rt-' + userId)
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'app_profit_logs', filter: `user_id=eq.${userId}` },
-            (payload) => {
-              const t = payload?.new?.source_type;
-              if (t === 'payout') rtTriggerReload('app_profit_logs INSERT');
-            }
-          )
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'app_realized_logs', filter: `user_id=eq.${userId}` },
-            () => rtTriggerReload('app_realized_logs INSERT')
-          )
-          .on(
-            'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'app_users', filter: `id=eq.${userId}` },
-            () => rtTriggerReload('users UPDATE')
-          )
-          .subscribe();
-
-      } catch (e) {
-        console.warn('Realtime subscribe failed:', e);
-      }
-    }
-
-    /* =========================
-      로그 불러오기
-    ========================= */
-    async function fetchProfitLogsForToday(userId) {
-      const start = new Date();
-      start.setHours(0,0,0,0);
-      const startIso = start.toISOString();
-
-      const [payoutRes, realizedRes] = await Promise.all([
-        supabase
-          .from('app_profit_logs')
-          .select('amount_delta, created_at, source_type')
-          .eq('user_id', userId)
-          .eq('source_type', 'payout')
-          .gte('created_at', startIso)
-          .order('created_at', { ascending: true }),
-        supabase
-          .from('app_realized_logs')
-          .select('delta, created_at, note')
-          .eq('user_id', userId)
-          .gte('created_at', startIso)
-          .order('created_at', { ascending: true })
-      ]);
-
-      if (payoutRes.error) throw payoutRes.error;
-      if (realizedRes.error) throw realizedRes.error;
-
-      const payoutRows = (Array.isArray(payoutRes.data) ? payoutRes.data : []).map(r => ({
-        delta: Number(r.amount_delta || 0),
-        created_at: r.created_at,
-        source_type: 'payout'
-      }));
-
-      const realizedRows = (Array.isArray(realizedRes.data) ? realizedRes.data : []).map(r => ({
-        delta: Number(r.delta || 0),
-        created_at: r.created_at,
-        source_type: 'manual'
-      }));
-
-      return [...payoutRows, ...realizedRows]
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    }
-
-    async function fetchProfitLogsRecent(userId, limit = 60) {
-      const [payoutRes, realizedRes] = await Promise.all([
-        supabase
-          .from('app_profit_logs')
-          .select('amount_delta, created_at, source_type')
-          .eq('user_id', userId)
-          .eq('source_type', 'payout')
-          .order('created_at', { ascending: false })
-          .limit(limit),
-        supabase
-          .from('app_realized_logs')
-          .select('delta, created_at, note')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(limit)
-      ]);
-
-      if (payoutRes.error) throw payoutRes.error;
-      if (realizedRes.error) throw realizedRes.error;
-
-      const payoutRows = (Array.isArray(payoutRes.data) ? payoutRes.data : []).map(r => ({
-        delta: Number(r.amount_delta || 0),
-        created_at: r.created_at,
-        source_type: 'payout'
-      }));
-
-      const realizedRows = (Array.isArray(realizedRes.data) ? realizedRes.data : []).map(r => ({
-        delta: Number(r.delta || 0),
-        created_at: r.created_at,
-        source_type: 'manual'
-      }));
-
-      return [...payoutRows, ...realizedRows]
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-        .slice(-limit);
-    }
-
-
-    // ✅ 누적 수익(전체) 계산: app_profit_logs 중 payout/auto 로그를 합산
-    async function fetchProfitTotal(userId, fallbackRealizedAmount = 0) {
-      return Number(fallbackRealizedAmount || 0);
-    }
-
-    /* =========================
-      타임라인 렌더
-    ========================= */
-    function renderTimeline(logs) {
-      const wrap = document.getElementById('profitTimeline');
-      const title = document.getElementById('timelineTitle');
-      const hint = document.getElementById('timelineHint');
-      const btn  = document.getElementById('btnToggleTimeline');
-
-      if (!wrap || !title || !hint) return;
-
-      title.textContent = (profitMode === 'today') ? '수익 로그 (오늘)' : '수익 로그 (최근 60건)';
-
-      if (!Array.isArray(logs) || logs.length === 0) {
-        hint.textContent = '기록 없음';
-        wrap.innerHTML = `
-          <div class="timeline-item">
-            <div class="timeline-left">
-              <div class="timeline-time">-</div>
-              <div class="timeline-msg">아직 수익 로그가 없습니다.</div>
-            </div>
-            <div class="timeline-delta timeline-same">-</div>
-          </div>
-        `;
-        if (btn) btn.style.display = 'none';
-        return;
-      }
-
-      const arr = [...logs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      const visible = timelineExpanded ? arr.length : 3;
-      const showArr = arr.slice(0, visible);
-
-      hint.textContent = `총 ${logs.length}건`;
-
-      if (btn) {
-        btn.style.display = logs.length > 3 ? 'inline-block' : 'none';
-        btn.textContent = timelineExpanded ? '접기' : '펼치기';
-      }
-
-      wrap.innerHTML = '';
-      showArr.forEach((r) => {
-        const delta = Number(r.delta || 0);
-        const cls = delta > 0 ? 'timeline-up' : (delta < 0 ? 'timeline-down' : 'timeline-same');
-        const sign = delta > 0 ? '▲' : (delta < 0 ? '▼' : '–');
-        const txt = `${sign} ${Math.abs(delta).toLocaleString('ko-KR')}원`;
-
-        const item = document.createElement('div');
-        item.className = 'timeline-item';
-        item.innerHTML = `
-          <div class="timeline-left">
-            <div class="timeline-time">${formatKST(r.created_at)}</div>
-            <div class="timeline-msg">${delta > 0 ? '수익' : (delta < 0 ? '손실' : '변동 없음')}</div>
-          </div>
-          <div class="timeline-delta ${cls}">${txt}</div>
-        `;
-        wrap.appendChild(item);
-      });
-    }
-
-    /* =========================
-      차트
-    ========================= */
-    function drawChart(series) {
-      const canvas = document.getElementById('profitChart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const w = canvas.width;
-      const h = canvas.height;
-
-      ctx.clearRect(0,0,w,h);
-
-      // grid
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(148,163,184,0.35)';
-      for (let i=1;i<=3;i++){
-        const y = (h/4)*i;
-        ctx.beginPath();
-        ctx.moveTo(0,y);
-        ctx.lineTo(w,y);
-        ctx.stroke();
-      }
-
-      if (!Array.isArray(series) || series.length < 2) return;
-
-      const min = Math.min(...series);
-      const max = Math.max(...series);
-      const range = Math.max(1, max - min);
-
-      const padX = 10;
-      const padY = 12;
-
-      ctx.lineWidth = 2.2;
-      ctx.strokeStyle = 'rgba(79,70,229,0.9)';
-      ctx.beginPath();
-
-      series.forEach((v, i) => {
-        const x = padX + ((w - padX*2) * (i / (series.length - 1)));
-        const y = (h - padY) - ((h - padY*2) * ((v - min) / range));
-        if (i === 0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
-      });
-      ctx.stroke();
-
-      // last dot
-      const last = series[series.length - 1];
-      const lx = padX + (w - padX*2);
-      const ly = (h - padY) - ((h - padY*2) * ((last - min) / range));
-      ctx.fillStyle = 'rgba(79,70,229,1)';
-      ctx.beginPath();
-      ctx.arc(lx, ly, 4, 0, Math.PI*2);
-      ctx.fill();
-    }
-
-    /* =========================
-      로그인 체크
-    ========================= */
-    function getLoginScope() {
-      // ✅ 로그인 계정 식별자(브라우저 공용값 금지)
-      try {
-        const raw = localStorage.getItem('raonai_current_user') || '';
-        // currentUser에 들어있는 값 우선
-        if (currentUser) {
-          if (currentUser.id != null) return String(currentUser.id);
-          if (currentUser.uid != null) return String(currentUser.uid);
-          if (currentUser.user_id != null) return String(currentUser.user_id);
-          if (currentUser.email) return String(currentUser.email);
-          if (currentUser.username) return String(currentUser.username);
-        }
-        // 그래도 없으면 raw 자체를 스코프로 사용(계정별로 JSON이 다르므로 섞이지 않음)
-        return raw ? ('raw_' + btoa(unescape(encodeURIComponent(raw))).slice(0, 24)) : 'raw_empty';
-      } catch (e) {
-        return 'raw_err';
-      }
-    }
-
-    function clearAllDeltaBadges() {
-      // ✅ 계정 전환 시 남아있는 '증감배지(Δ)' 캐시를 전부 제거
-      try {
-        const keys = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && k.startsWith('raonai_badge_')) keys.push(k);
-        }
-        keys.forEach(k => localStorage.removeItem(k));
-      } catch (e) {}
-    }
-
-    function ensureBadgeScope() {
-      // ✅ 현재 로그인 계정이 바뀌면, 이전 계정의 증감배지를 절대 따라오지 않게 초기화
-      const scope = getLoginScope();
-      const prev = localStorage.getItem('raonai_badge_active_scope');
-      if (!prev || prev !== scope) {
-        clearAllDeltaBadges();
-        localStorage.setItem('raonai_badge_active_scope', scope);
-      }
-      return scope;
-    }
-
-
-    function requireLogin() {
-      const raw = localStorage.getItem('raonai_current_user');
-      if (!raw) {
-        alert('로그인이 필요합니다.');
-        window.location.href = 'index.html';
-        return false;
-      }
-      try {
-        currentUser = JSON.parse(raw);
-        ensureBadgeScope();
-        return true;
-      } catch (e) {
-        localStorage.removeItem('raonai_current_user');
-        window.location.href = 'index.html';
-        return false;
-      }
-    }
-
-    /* =========================
-      모드 UI
-    ========================= */
-    function setModeUI() {
-      const todayBtn = document.getElementById('toggleToday');
-      const totalBtn = document.getElementById('toggleTotal');
-      const label = document.getElementById('realizedLabel');
-      const title = document.getElementById('chartTitle');
-
-      if (profitMode === 'today') {
-        todayBtn.classList.add('active');
-        totalBtn.classList.remove('active');
-        if (label) label.textContent = '수익 (오늘)';
-        if (title) title.textContent = '실시간 수익 그래프 (오늘)';
-      } else {
-        totalBtn.classList.add('active');
-        todayBtn.classList.remove('active');
-        if (label) label.textContent = '수익 (누적)';
-        if (title) title.textContent = '실시간 수익 그래프 (누적)';
-      }
-    }
-
-    /* =========================
-      메인 로더
-    ========================= */
-    async function loadStatus() {
-      setRealtimeError(false);
-      setSkeleton(true);
-
-      const nameLine = document.getElementById('nameLine');
-      const displayName = (currentUser && (currentUser.name || currentUser.username)) || '';
-      if (nameLine) {
-        nameLine.textContent = displayName
-          ? (displayName + '님의 AI 투자 진행 정보입니다.')
-          : 'AI 투자 진행 정보입니다.';
-      }
-
-      try {
-        const { data: userRow, error: userErr } = await supabase
-          .from('app_users')
-          .select('*')
-          .eq('username', currentUser.username)
-          .maybeSingle();
-
-        if (userErr) throw userErr;
-        if (!userRow) throw new Error('app_users 테이블에서 사용자 데이터를 찾을 수 없습니다.');
-
-        currentUserDbId = userRow.id;
-
-        // ✅ Realtime 구독
-        subscribeRealtime(userRow);
-
-        // users 값
-        const amount = Number(userRow.amount || 0);
-
-        // ✅ 실제 누적수익과 화면 표시용 보정금 분리
-        // - actualTotalProfit: 기존 로그/그래프 계산용 실제 누적수익
-        // - displayBonus: 로그와 그래프에는 나타나지 않는 화면 표시용 보정금
-        // - displayTotalProfit: 누적수익/총금액/내정보에만 표시
-        const realizedTotalFromUsers = Number(userRow.realized_amount || 0);
-        const actualTotalProfit = await fetchProfitTotal(userRow.id, realizedTotalFromUsers);
-        const displayBonus = Number(userRow.realized_display_bonus || 0);
-        const displayTotalProfit = actualTotalProfit + displayBonus;
-        const totalAssetTotal = amount + displayTotalProfit;
-
-        const todayLogs = await fetchProfitLogsForToday(userRow.id);
-        const recentLogs = await fetchProfitLogsRecent(userRow.id, 60);
-
-        const todayProfit = todayLogs.reduce((sum, r) => sum + Number(r.delta || 0), 0);
-        // ✅ 오늘 수익 리셋(00시) 감지: 날짜가 바뀌면 "감소 배지"가 뜨지 않도록 초기화 처리
-        const todayKey = getLocalDateKey(new Date());
-        const todayKeyStore = `raonai_today_key:${userRow.id}`;
-        const lastTodayKey = localStorage.getItem(todayKeyStore);
-        const dayChanged = !!(lastTodayKey && lastTodayKey !== todayKey);
-        if (!lastTodayKey || dayChanged) localStorage.setItem(todayKeyStore, todayKey);
-
-        // ✅ 화면에 표시되는 수익
-        // 오늘 수익: 기존 오늘 로그만 사용 (보정금 미포함)
-        // 누적 수익: 실제 누적수익 + 화면 표시용 보정금
-        const realizedShown = (profitMode === 'today') ? todayProfit : displayTotalProfit;
-
-        // ✅ 총금액은 표시용 누적수익 기준
-        // 보정금은 로그/그래프에는 없지만 총 자산 숫자에는 포함
-        const totalShown = amount + displayTotalProfit;
-
-        // ✅ 타임라인
-        renderTimeline(profitMode === 'today' ? todayLogs : recentLogs);
-
-        // DOM 참조
-        const amountNum = document.getElementById('amountNum');
-        const amountBadge = document.getElementById('amountBadge');
-
-        const investNum = document.getElementById('amountInvestNum');
-        const investBadge = document.getElementById('amountInvestBadge');
-
-        const realizedNum = document.getElementById('realizedNum');
-        const realizedBadge = document.getElementById('realizedBadge');
-
-        const totalNum = document.getElementById('totalNum');
-        const totalBadge = document.getElementById('totalBadge');
-
-        const boxRealized = document.getElementById('boxRealized');
-        const boxTotal = document.getElementById('boxTotal');
-
-        // 색상
-        if (realizedNum?.parentElement) {
-          realizedNum.parentElement.classList.remove('amount-positive','amount-muted');
-          realizedNum.parentElement.classList.add(realizedShown > 0 ? 'amount-positive' : 'amount-muted');
-        }
-        if (totalNum?.parentElement) {
-          totalNum.parentElement.classList.remove('amount-positive','amount-muted');
-          totalNum.parentElement.classList.add(totalShown > 0 ? 'amount-positive' : 'amount-muted');
-        }
-
-        // 이전값
-        const prevAmount = prev.amount;
-        let prevToday = prev.todayProfit;
-        if (dayChanged) prevToday = 0;
-        const prevTotalProfit = prev.totalProfit;
-        const prevAsset = prev.totalAsset;
-        const prevRealizedShown = (profitMode === 'today') ? prevToday : prevTotalProfit;
-
-        // delta
-        // 1) 투자중 금액 배지: "변경 1회"만 표시 (새로고침/재조회 시 재표시 방지)
-        const deltaAmount = oneTimeDelta('raonai_invest_amount', userRow.id, amount);
-        const deltaInvest = deltaAmount;
-
-        // 2) 오늘 수익: 00시 리셋은 "감소"로 취급하지 않음 (배지/애니메이션 억제)
-        const suppressTodayReset = (profitMode === 'today') && dayChanged;
-
-        const deltaRealized =
-          prev.initialized && !prev.suppressDeltaOnce && !suppressTodayReset
-            ? (realizedShown - prevRealizedShown)
-            : 0;
-
-        // 3) 총 금액: 항상 누적 기준이므로, 토글과 무관하게 "실제 변동"만 반영
-        //    단, 00시 날짜 변경으로 인한 '오늘 수익 리셋'은 총 금액 변화로 취급하지 않도록 1회 억제
-        const deltaTotal =
-          prev.initialized && !prev.suppressDeltaOnce && !dayChanged
-            ? (totalShown - prevAsset)
-            : 0;
-
-        // 배지
-        // ✅ 요청사항: 'AI투자중인 금액' / '투자중인 금액'에는 증감 배지를 표시하지 않음
-        if (amountBadge) { amountBadge.className = ''; amountBadge.textContent = ''; }
-        if (investBadge) { investBadge.className = ''; investBadge.textContent = ''; }
-
-        // ✅ 배지
-        // - 오늘 모드: 오늘 로그가 없으면 배지 제거
-        // - 누적 모드: 최근 수익 이벤트 유지
-        const badgeLogs = (profitMode === 'today') ? todayLogs : recentLogs;
-        const ev = getLastProfitEventDelta(userRow.id + ':' + profitMode, badgeLogs);
-
-        if (profitMode === 'today') {
-          renderDeltaBadge(realizedBadge, ev.delta, { persistId: 'profitEventBadgeToday', keepOnZero: false, clearOnZero: true });
-          renderDeltaBadge(totalBadge,    ev.delta, { persistId: 'profitEventBadgeToday', keepOnZero: false, clearOnZero: true });
-        } else {
-          renderDeltaBadge(realizedBadge, ev.delta, { persistId: 'profitEventBadgeTotal', keepOnZero: true });
-          renderDeltaBadge(totalBadge,    ev.delta, { persistId: 'profitEventBadgeTotal', keepOnZero: true });
-        }
-
-
-        // 숫자
-        if (!prev.initialized || prev.suppressDeltaOnce || suppressTodayReset) {
-          if (amountNum)  amountNum.textContent  = formatAmount(amount);
-          if (investNum)  investNum.textContent  = formatAmount(amount);
-          if (realizedNum)realizedNum.textContent= formatAmount(realizedShown);
-          if (totalNum)   totalNum.textContent   = formatAmount(totalShown);
-        } else {
-          animateMoney(amountNum,  prevAmount, amount);
-          animateMoney(investNum,  prevAmount, amount);
-          animateMoney(realizedNum,prevRealizedShown, realizedShown);
-          animateMoney(totalNum,   prevAsset, totalShown);
-        }
-
-        // 효과
-        const dirReal = deltaRealized > 0 ? 'up' : (deltaRealized < 0 ? 'down' : null);
-        const dirTot  = deltaTotal > 0 ? 'up' : (deltaTotal < 0 ? 'down' : null);
-
-        if (dirReal) {
-          applyPulse(realizedNum?.parentElement, dirReal);
-          applyCardGlow(boxRealized, dirReal);
-        }
-        if (dirTot) {
-          applyPulse(totalNum?.parentElement, dirTot);
-          applyCardGlow(boxTotal, dirTot);
-          applySweep(boxTotal, dirTot);
-        }
-
-        // ✅ 차트 시리즈
-        let series = [];
-        if (profitMode === 'today') {
-          let c = 0;
-          const deltas = todayLogs.map(r => Number(r.delta || 0));
-          if (deltas.length === 0) deltas.push(0, 0);
-          if (deltas.length === 1) deltas.unshift(0);
-          deltas.forEach(d => { c += d; series.push(c); });
-          const hint = document.getElementById('chartHint');
-          if (hint) hint.textContent = '오늘 누적(수익 기준)';
-        } else {
-          const deltas = recentLogs.map(r => Number(r.delta || 0));
-          const sumRecent = deltas.reduce((s,v)=>s+v,0);
-          // ✅ 누적 그래프는 보정금을 절대 포함하지 않고 실제 누적수익만 사용
-          let base = actualTotalProfit - sumRecent;
-          let c = base;
-          if (deltas.length === 0) deltas.push(0, 0);
-          if (deltas.length === 1) deltas.unshift(0);
-          series = [];
-          deltas.forEach(d => { c += d; series.push(c); });
-          const hint = document.getElementById('chartHint');
-          if (hint) hint.textContent = '누적(최근 60건 기준)';
-        }
-        drawChart(series);
-
-        // ✅ 상태/단계/내정보
-        renderStatus(userRow.status);
-        renderSteps(userRow.status);
-        // ✅ 내 정보의 누적 수익 숫자에도 표시용 보정금 포함
-        fillAccountInfo({ ...userRow, realized_amount: displayTotalProfit });
-
-        // prev 저장 (화면 표시 기준)
-        prev.amount = amount;
-        prev.todayProfit = todayProfit;
-        prev.totalProfit = displayTotalProfit;
-        prev.totalAsset = totalShown;
-        prev.initialized = true;
-        prev.suppressDeltaOnce = false;
-
-        setSkeleton(false);
-        setLastUpdated(new Date());
-      } catch (e) {
-        console.error(e);
-        setSkeleton(false);
-        setRealtimeError(true, '조회 실패: ' + (e?.message || '오류가 발생했습니다.'));
-      }
-    }
-
-    /* =========================
-      이벤트 바인딩 (중복 금지)
-    ========================= */
-    document.addEventListener('DOMContentLoaded', () => {
-      // ✅ 모달이 로그인하자마자 뜨는 문제 차단(안전장치)
-      const settingsModal = document.getElementById('settingsModal');
-      if (settingsModal) settingsModal.classList.add('hidden');
-
-      if (!requireLogin()) return;
-
-      // 탭
-      document.getElementById('tabStatus')?.addEventListener('click', () => showTab('status'));
-      document.getElementById('tabIntro')?.addEventListener('click', () => showTab('intro'));
-      document.getElementById('tabAccount')?.addEventListener('click', () => showTab('account'));
-
-      // 로그아웃
-      document.getElementById('btnLogout')?.addEventListener('click', () => {
-        localStorage.removeItem('raonai_current_user');
-                try {
-          const scope = (currentUserDbId != null ? String(currentUserDbId) : (currentUser && currentUser.username) ? String(currentUser.username) : 'anon');
-          ['realizedBadge','totalBadge'].forEach(id => {
-            ['today','total'].forEach(mode => {
-              localStorage.removeItem(`raonai_badge_${scope}_${id}_${mode}`);
-            });
-          });
-        } catch (e) {}
-alert('로그아웃 되었습니다.');
-        window.location.href = 'index.html';
-      });
-
-      // 재조회
-      document.getElementById('btnRefresh')?.addEventListener('click', loadStatus);
-      document.getElementById('btnRetryInline')?.addEventListener('click', loadStatus);
-
-      // 펼치기/접기 (딱 1번만)
-      document.getElementById('btnToggleTimeline')?.addEventListener('click', () => {
-        timelineExpanded = !timelineExpanded;
-        loadStatus();
-      });
-
-      // 토글
-      document.getElementById('toggleToday')?.addEventListener('click', async () => {
-        profitMode = 'today';
-        setModeUI();
-        prev.suppressDeltaOnce = true;
-        await loadStatus();
-      });
-
-      document.getElementById('toggleTotal')?.addEventListener('click', async () => {
-        profitMode = 'total';
-        setModeUI();
-        prev.suppressDeltaOnce = true;
-        await loadStatus();
-      });
-
-      // ✅ 내 정보 수정 모달: "버튼 눌렀을 때만" 열림
-      const btnOpenSettings = document.getElementById('btnOpenSettings');
-      const btnCancelSettings = document.getElementById('btnCancelSettings');
-      const btnSaveSettings = document.getElementById('btnSaveSettings');
-
-      btnOpenSettings?.addEventListener('click', () => {
-        if (!settingsModal) return;
-        document.getElementById('editPassword').value = '';
-        document.getElementById('editBank').value = ''; // 값은 loadStatus에서 사용자 정보 채워지니 원하면 여기서 넣어도 됨
-        settingsModal.classList.remove('hidden');
-      });
-
-      btnCancelSettings?.addEventListener('click', () => {
-        settingsModal?.classList.add('hidden');
-      });
-
-      // 모달 바깥 클릭 시 닫기(원치 않으면 지워도 됨)
-      settingsModal?.addEventListener('click', (e) => {
-        if (e.target === settingsModal) settingsModal.classList.add('hidden');
-      });
-
-      btnSaveSettings?.addEventListener('click', async () => {
-        try {
-          const newPw = document.getElementById('editPassword').value.trim();
-          const newBank = document.getElementById('editBank').value.trim();
-
-          const payload = {};
-          if (newPw) payload.password_hash = newPw;
-          payload.bank_account = newBank || null;
-
-          if (!currentUserDbId) {
-            alert('사용자 정보를 확인할 수 없습니다. 재조회 후 다시 시도하세요.');
-            return;
-          }
-
-          const { data, error } = await supabase
-            .from('app_users')
-            .update(payload)
-            .eq('id', currentUserDbId)
-            .select('*')
-            .maybeSingle();
-
-          if (error) throw error;
-
-          // localStorage user에도 bank_account 반영
-          currentUser = { ...currentUser, ...data };
-          localStorage.setItem('raonai_current_user', JSON.stringify(currentUser));
-
-          fillAccountInfo(data);
-          settingsModal?.classList.add('hidden');
-          alert('정보가 저장되었습니다.');
-        } catch (e) {
-          console.error(e);
-          alert('정보 수정 중 오류가 발생했습니다.');
-        }
-      });
-
-      // 마지막 업데이트 텍스트만 갱신
-      setInterval(() => {
-        if (lastUpdatedAt) {
-          const el = document.getElementById('lastUpdatedText');
-          if (el) el.textContent = '마지막 업데이트: ' + relativeTime(lastUpdatedAt);
-        }
-      }, 5000);
-
-      // 초기
-      setModeUI();
-      showTab('status');
-      loadStatus();
-    });
-
-    // 페이지 나갈 때 채널 정리
-    window.addEventListener('beforeunload', () => {
-      try { if (rtChannel) sb.removeChannel(rtChannel); } catch (e) {}
-    });
-  </script>
-</body>
-</html>
+</body></html>
